@@ -1,0 +1,177 @@
+
+R version 2.6.0 Under development (unstable) (2007-05-29 r41747)
+Copyright (C) 2007 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+Loading required package: rcompgen
+> #################################
+> ## Test for dist calls
+> ##################################
+> 
+> library(proxy)
+
+Attaching package: 'proxy'
+
+
+	The following object(s) are masked from package:stats :
+
+	 as.dist,
+	 dist 
+
+> 
+> ## get all measures
+> proxies = pr_DB$get_entry_names()
+> 
+> ## remove special cases
+> proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles"))
+> 
+> ## create test data
+> x = matrix(1:100, 10)
+> 
+> ## test function: checks if dist(x) == dist(x,x) for all measures
+> prtest <- function(...) all(as.matrix(dist(x, ...)) == dist(x, x, ...))
+> 
+> ## loop over all measures (except special cases)
+> for (i in proxies)
++     {cat(i); prtest(i); cat(": OK.\n")}
+Jaccard: OK.
+Kulczynski1: OK.
+Kulczynski2: OK.
+Mountford: OK.
+Russel: OK.
+Simple Matching: OK.
+Hamman: OK.
+Tanimoto: OK.
+Dice: OK.
+Phi: OK.
+Michael: OK.
+Mozley: OK.
+Yule: OK.
+Yule2: OK.
+Ochiai: OK.
+Simson: OK.
+Braun-Blanquet: OK.
+cosine: OK.
+eJaccard: OK.
+fJaccard: OK.
+correlation: OK.
+Chi-Squared: OK.
+PhiSquared: OK.
+Tschuprow: OK.
+Cramer: OK.
+Pearson: OK.
+Gower: OK.
+Euclidean: OK.
+Bhjattacharyya: OK.
+Manhattan: OK.
+supremum: OK.
+Canberra: OK.
+Wave: OK.
+Divergence: OK.
+Kullback: OK.
+Bray: OK.
+Soergel: OK.
+LevenshteinLoading required package: cba
+Loading required package: cluster
+Loading required package: grid
+
+Attaching package: 'cba'
+
+
+	The following object(s) are masked from package:proxy :
+
+	 rowSums.dist 
+
+: OK.
+> 
+> ## Minkowski
+> writeLines("Minkowski:")
+Minkowski:
+> for (j in c(0, 0.5, 1, 2, 3, Inf))
++     {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
+p = 0: OK.
+p = 0.5: OK.
+p = 1: OK.
+p = 2: OK.
+p = 3: OK.
+p = Inf: OK.
+> 
+> ## Mahalanobis (need non-singular matrix)
+> x = as.matrix(iris[1:50,-5])
+> prtest("Mahalanobis")
+[1] TRUE
+> 
+> ## produce binary matrix
+> x = matrix(rbinom(100,1,0.7), 10)
+> 
+> ## Stiles (gives a lot of warnings due to log)
+> tmp = dist(x, "Stiles")
+There were 23 warnings (use warnings() to see them)
+> tmp = dist(x, x, "Stiles")
+There were 46 warnings (use warnings() to see them)
+> 
+> ## try again (almost) all measures, this time with binary data to check
+> ## conversions
+> for (i in proxies)
++     {cat(i); prtest(i); cat(": OK.\n")}
+Jaccard: OK.
+Kulczynski1: OK.
+Kulczynski2: OK.
+Mountford: OK.
+Russel: OK.
+Simple Matching: OK.
+Hamman: OK.
+Tanimoto: OK.
+Dice: OK.
+Phi: OK.
+Michael: OK.
+Mozley: OK.
+Yule: OK.
+Yule2: OK.
+Ochiai: OK.
+Simson: OK.
+Braun-Blanquet: OK.
+cosine: OK.
+eJaccard: OK.
+fJaccard: OK.
+correlation: OK.
+Chi-Squared: OK.
+PhiSquared: OK.
+Tschuprow: OK.
+Cramer: OK.
+Pearson: OK.
+Gower: OK.
+Euclidean: OK.
+Bhjattacharyya: OK.
+Manhattan: OK.
+supremum: OK.
+Canberra: OK.
+Wave: OK.
+Divergence: OK.
+Kullback: OK.
+Bray: OK.
+Soergel: OK.
+Levenshtein: OK.
+> for (j in c(0, 0.5, 1, 2, 3, Inf))
++     {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
+p = 0: OK.
+p = 0.5: OK.
+p = 1: OK.
+p = 2: OK.
+p = 3: OK.
+p = Inf: OK.
+> 
