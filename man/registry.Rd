@@ -27,7 +27,8 @@ pr_DB
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{name}{character string representing the name of an entry.}
+  \item{name}{character string representing the name of an
+    entry (case-insensitive).}
   \item{pattern}{regular expression to be matched to all fields of class
     \code{"character"} in all entries.}
   \item{default}{optional default value for the field.}
@@ -166,8 +167,8 @@ mydist <- function(x,y) x * y
 ## create a new entry in the registry with two aliases
 pr_DB$set_entry(FUN = mydist, names = c("test", "mydist"))
 
-## look it up
-pr_DB$get_entry("test")
+## look it up (index is case insensitive):
+pr_DB$get_entry("TEST")
 
 ## modify the content of the description field in the new entry
 pr_DB$modify_entry(names = "test", description = "foo function")

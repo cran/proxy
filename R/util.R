@@ -1,5 +1,5 @@
 
-## wrappers to class dist
+## wrappers for class dist
 ##
 ## note that all type checking and coercing
 ## is now done in C, as well as handling of

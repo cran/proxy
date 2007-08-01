@@ -16,29 +16,42 @@
  */
 
 SEXP R_apply_dist_matrix(SEXP p) {
-    int i, j, k, l, n, nx, ny, m = 0;
+    int i, j, k, l, n, nx, ny, nz, m = 0;
     SEXP r, c, tx, ty;
-    SEXP R_x, x, R_y, y, f;
+    SEXP R_x, x, R_y, y, R_d, f;
 
     p = CDR(p);
-    if (length(p) < 3)
+    if (length(p) < 4)
         error("invalid number of arguments");
     R_x = x = CAR(p); R_y = y = CADR(p);
     if (!isMatrix(x) || (!isNull(y) && !isMatrix(y)))
         error("invalid data parameter(s)");
-    p = CDDR(p); f = CAR(p); 
+    p = CDDR(p); R_d = CAR(p);
+    if (TYPEOF(R_d) != LGLSXP)
+	error("invalid option parameter");
+    p = CDR(p); f = CAR(p); 
     if (!isFunction(f))
         error("invalid function parameter");
     p = CDR(p);
 
     if (isNull(y))
         y = x;  
-    else 
+    else
+    if (LOGICAL(R_d)[0] == TRUE)
+	m = 2;
+    else
 	m = 1;
     
     if ((n = INTEGER(GET_DIM(x))[1]) != INTEGER(GET_DIM(y))[1])
-        error("the columns of the data matrixes do not conform");
-    
+        error("the number of columns of the data matrixes do not conform");
+   
+    nz =
+    nx = INTEGER(GET_DIM(x))[0];
+    ny = INTEGER(GET_DIM(y))[0];
+
+    if (m == 2 && nx != ny)
+	error("the number of rows of the data matrixes do not conform");
+
     if (TYPEOF(x) != REALSXP) {
 	PROTECT(x = coerceVector(R_x, REALSXP));
 
@@ -49,10 +62,7 @@ SEXP R_apply_dist_matrix(SEXP p) {
     if (TYPEOF(y) != REALSXP) 
 	PROTECT(y = coerceVector(R_y, REALSXP));
 
-    nx = INTEGER(GET_DIM(x))[0];
-    ny = INTEGER(GET_DIM(y))[0];
-
-    if (!m && x == y) {
+    if (m == 0) {
 	SEXP d;
 	
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
@@ -62,7 +72,8 @@ SEXP R_apply_dist_matrix(SEXP p) {
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
 	// fixme: package?
 	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else {
+    } else
+    if (m == 1) {
 	SEXP d1, d2;
 	
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
@@ -76,7 +87,8 @@ SEXP R_apply_dist_matrix(SEXP p) {
 	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
 	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
 	}
-    }
+    } else
+	PROTECT(r = allocVector(REALSXP, nx));
     
     PROTECT(tx = allocVector(REALSXP, n)); 
     PROTECT(ty = allocVector(REALSXP, n));
@@ -87,7 +99,16 @@ SEXP R_apply_dist_matrix(SEXP p) {
     for (j = 0; j < ny; j++) {
         for (k = 0; k < n; k++)
             REAL(ty)[k] = REAL(y)[j+k*ny];
-        for (i = ((!m && x == y) ? j+1 : 0); i < nx; i++) {
+	if (m == 0)
+	    i = j+1;
+	else 
+	if (m == 1)
+	    i = 0;
+	else {
+	    i  = j;
+	    nz = j+1;
+	}
+        for (i = i; i < nz; i++) {
             for (k = 0; k < n; k++)
                 REAL(tx)[k] = REAL(x)[i+k*nx];
             SEXP s = eval(c, R_GlobalEnv);
@@ -118,17 +139,20 @@ SEXP R_apply_dist_matrix(SEXP p) {
  */
 
 SEXP R_apply_dist_list(SEXP p) {
-    int i, j, l, nx, ny, m = 0;
-    SEXP r, c, tx, ty;
+    int i, j, l, nx, ny, nz, m = 0;
+    SEXP r, c, d, tx, ty;
     SEXP x, y, f;
 
     p = CDR(p);
-    if (length(p) < 3)
+    if (length(p) < 4)
         error("invalid number of arguments");
     x = CAR(p); y = CADR(p);
     if (TYPEOF(x) != VECSXP || (!isNull(y) && TYPEOF(y) != VECSXP))
         error("invalid data parameter(s)");
-    p = CDDR(p); f = CAR(p); 
+    p = CDDR(p); d = CAR(p);
+    if (TYPEOF(d) != LGLSXP)
+	error("invalid option parameter");
+    p = CDR(p); f = CAR(p); 
     if (!isFunction(f))
         error("invalid function parameter");
     p = CDR(p);
@@ -136,12 +160,16 @@ SEXP R_apply_dist_list(SEXP p) {
     if (isNull(y))
         y = x;  
     else
+    if (LOGICAL(d)[0] == TRUE)
+	m = 2;
+    else
 	m = 1;
-   
+  
+    nz =
     nx = LENGTH(x);
     ny = LENGTH(y);
 
-    if (!m && x == y) {
+    if (m == 0) {
 	SEXP d;
 	
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
@@ -152,7 +180,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
 	// fixme: package?
 	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else {
+    } else 
+    if (m == 1) {
 	SEXP d1, d2;
 	
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
@@ -166,6 +195,11 @@ SEXP R_apply_dist_list(SEXP p) {
 	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
 	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
 	}
+    } else {
+	if (nx != ny)
+	    error("the number of components of 'x' and 'y' does not conform");
+
+	PROTECT(r = allocVector(REALSXP, nx));
     }
     
     PROTECT(c = LCONS(f, (tx = LCONS(R_NilValue, 
@@ -174,7 +208,16 @@ SEXP R_apply_dist_list(SEXP p) {
     l = 0;
     for (j = 0; j < ny; j++) {
         SETCAR(ty, VECTOR_ELT(y, j));
-        for (i = ((!m && x == y) ? j+1 : 0); i < nx; i++) {
+	if (m == 0)
+	    i = j+1;
+	else
+	if (m == 1)
+	    i = 0;
+	else {
+	    i  = j;
+	    nz = j+1;
+	}
+        for (i = i; i < nz; i++) {
             SETCAR(tx, VECTOR_ELT(x, i));
             SEXP s = eval(c, R_GlobalEnv);
             if (LENGTH(s) != 1)
@@ -201,9 +244,9 @@ SEXP R_apply_dist_list(SEXP p) {
  */
 
 SEXP R_apply_dist_binary_matrix(SEXP p) {
-    int i, j, k, l, n, nx, ny, m = 0;   
+    int i, j, k, l, n, nx, ny, nz, m = 0;   
     int i0, j0;
-    SEXP r, c, ta, tb, tc, td, tn;
+    SEXP r, c, d, ta, tb, tc, td, tn;
     SEXP x, y, f;
 
     p = CDR(p);
@@ -213,23 +256,30 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
     if (!isMatrix(x) || TYPEOF(x) != LGLSXP || 
 	(!isNull(y) && (!isMatrix(y) || TYPEOF(x) != LGLSXP)))
         error("invalid data parameter(s)");
-    p = CDDR(p); f = CAR(p); 
+    p = CDDR(p); d = CAR(p);
+    if (TYPEOF(d) != LGLSXP)
+	error("invalid option parameter");
+    p = CDR(p); f = CAR(p); 
     if (!isFunction(f))
         error("invalid function parameter");
     p = CDR(p);
 
     if (isNull(y))
         y = x;  
-    else 
+    else
+    if (LOGICAL(d)[0] == TRUE)
+	m = 2;
+    else
         m = 1;
     
     if ((n = INTEGER(GET_DIM(x))[1]) != INTEGER(GET_DIM(y))[1])
         error("data parameters do not conform");
-    
+
+    nz =
     nx = INTEGER(GET_DIM(x))[0];
     ny = INTEGER(GET_DIM(y))[0];
 
-    if (!m && x == y) {
+    if (m == 0) {
 	SEXP d;
 	
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
@@ -240,7 +290,8 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
 	// fixme: package?
 	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else {
+    } else
+    if (m == 1) {
 	SEXP d1, d2;
 	
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
@@ -254,6 +305,11 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
 	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
 	}
+    } else {
+	if (nx != ny)
+	    error("the number of rows of 'x' and 'y' does not conform");
+
+	PROTECT(r = allocVector(REALSXP, nx));
     }
 
     PROTECT(ta = allocVector(INTSXP, 1)); 
@@ -267,7 +323,16 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
     
     l = 0;
     for (j = 0; j < ny; j++) {
-        for (i = ((!m && x == y) ? j+1 : 0); i < nx; i++) {
+	if (m == 0)
+	    i = j+1;
+	else
+	if (m == 1)
+	    i = 0;
+	else {
+	    i  = j;
+	    nz = j+1;
+	}
+        for (i = i; i < nz; i++) {
             INTEGER(ta)[0] = INTEGER(tb)[0] = INTEGER(tc)[0] = INTEGER(tn)[0] = 
 0;
             for (k = 0; k < n; k++) {
@@ -334,18 +399,21 @@ static void setElement(SEXP x, int i, SEXP y) {
 }
 
 SEXP R_apply_dist_data_frame(SEXP p) {
-    int i, j, k, l, nc, nx, ny, m = 0;
-    SEXP r, c, tx, ty, rx, ry;
+    int i, j, k, l, nc, nx, ny, nz, m = 0;
+    SEXP r, c, d, tx, ty, rx, ry;
     SEXP x, y, f;
 
     p = CDR(p);
-    if (length(p) < 3)
+    if (length(p) < 4)
         error("invalid number of arguments");
     x = CAR(p); y = CADR(p);
     if (!inherits(x, "data.frame") || (!isNull(y) && 
         !inherits(y, "data.frame")))
         error("invalid data parameter(s)");
-    p = CDDR(p); f = CAR(p); 
+    p = CDDR(p); d = CAR(p);
+    if (TYPEOF(d) != LGLSXP)
+	error("invalid option parameter");
+    p = CDR(p); f = CAR(p); 
     if (!isFunction(f))
         error("invalid function parameter");
     p = CDR(p);
@@ -354,7 +422,7 @@ SEXP R_apply_dist_data_frame(SEXP p) {
     if (nc == 0)
 	error("cannot handle empty data frames");
 
-    nx = ny = LENGTH(VECTOR_ELT(x, 0));
+    nx = ny = nz = LENGTH(VECTOR_ELT(x, 0));
 
     if (isNull(y))
         y = x;  
@@ -375,19 +443,25 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 	    if (LOGICAL(eval(c, R_GlobalEnv))[0] == FALSE)
 		error("attributes of data parameters do not conform");
 	}
+	if (LOGICAL(d)[0] == TRUE) {
+	    if (nx != ny)
+		error("the number of rows of 'x' and 'y' do not conform");
 
-	m = 1;
+	    m = 2;
+	} else
+	    m = 1;
     }
 
     // fixme: row.names
-    if (!m && x == y) {
+    if (m == 0) {
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
 
 	setAttrib(r, install("Size"), ScalarInteger(nx));
 	setAttrib(r, install("Labels"), coerceVector(getAttrib(x, install("row.names")), STRSXP));
 
 	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else {
+    } else 
+    if (m == 1) {
 	SEXP d;
 
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
@@ -395,7 +469,8 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 	setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
 	SET_VECTOR_ELT(d, 0, coerceVector(getAttrib(x, install("row.names")), STRSXP));
 	SET_VECTOR_ELT(d, 1, coerceVector(getAttrib(y, install("row.names")), STRSXP));
-    }
+    } else
+	PROTECT(r = allocVector(REALSXP, nx));
 
     PROTECT(tx = allocVector(VECSXP, nc));
     setAttrib(tx, R_NamesSymbol, getAttrib(x, R_NamesSymbol));
@@ -429,7 +504,16 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 	for (k = 0; k < nc; k++)
 	    setElement(VECTOR_ELT(ty, k), j, VECTOR_ELT(y, k));
 	INTEGER(ry)[0] = j+1;		// R index
-        for (i = ((!m && x == y) ? j+1 : 0); i < nx; i++) {
+	if (m == 0)
+	    i = j+1;
+	else
+	if (m == 1)
+	    i = 0;
+	else {
+	    i  = j;
+	    nz = j+1;
+	}
+        for (i = i; i < nz; i++) {
 	    for (k = 0; k < nc; k++)
 		setElement(VECTOR_ELT(tx, k), i, VECTOR_ELT(x, k));
 	    INTEGER(rx)[0] = i+1;

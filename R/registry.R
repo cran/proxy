@@ -6,7 +6,8 @@
 
 registry <-
 function(index_field = "names", entry_class = NULL,
-         validity_FUN = NULL, registry_class = NULL)
+         validity_FUN = NULL, registry_class = NULL,
+         ignore_case = TRUE)
 {
 ### ATTRIBUTES
     ## repository
@@ -53,8 +54,13 @@ function(index_field = "names", entry_class = NULL,
 
     .get_entry_index <-
     function(name, stop_if_missing = TRUE) {
-        ## returns the index of the first exact match
-        index <- sapply(DATA, function(i) name %in% i[[index_field]])
+        ## returns the index of the first exact match (modulo case):
+        index <- if (ignore_case)
+            sapply(DATA,
+                   function(i) toupper(name) %in% toupper(i[[index_field]]))
+        else
+            sapply(DATA,
+                   function(i) name %in% i[[index_field]])
         if (!any(index)) {
             if (stop_if_missing)
                 stop(paste("Entry", dQuote(name), "not in registry."))
@@ -101,7 +107,10 @@ function(index_field = "names", entry_class = NULL,
     ## field accessors
     .entry_exists <-
     function(name)
-        name %in% sapply(DATA, function(i) i[[index_field]])
+        if (ignore_case)
+            toupper(name) %in% toupper(sapply(DATA, function(i) i[[index_field]]))
+        else
+            name %in% sapply(DATA, function(i) i[[index_field]])
 
     .get_field <-
     function(name)
@@ -212,10 +221,13 @@ function(index_field = "names", entry_class = NULL,
     .get_entries <-
     function(names = NULL, pattern = NULL) {
         ## fix search
-        if (!is.null(names))
-            DATA[intersect(names, names(DATA))]
+        if (!is.null(names)) {
+            if (ignore_case)
+                DATA[intersect(toupper(names), toupper(names(DATA)))]
+            else
+                DATA[intersect(names, names(DATA))]
         ## grep search
-        else if (!is.null(pattern)) {
+        } else if (!is.null(pattern)) {
             pattern_in_entry <-
                 function(x) any(sapply(x, function(i) is.character(i)
                                        && length(grep(pattern, i) > 0)))
@@ -287,6 +299,7 @@ function(index_field = "names", entry_class = NULL,
 
         ## fetch entry
         entry <- DATA[[entry_index]]
+        name <- entry[[index_field]][1]
 
         for (field in setdiff(n, index_field)) {
             ## check if field is modifiable

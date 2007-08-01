@@ -1,0 +1,11 @@
+Changes to 0.2:
+
+  o data frames are auto-converted to matrices if all variables are 
+    either numeric, logical, or complex (to be compatible to 
+    stats::dist)
+  o pairwise distances can now be computed
+  o Registry is now case-insensitive
+
+Changes to 0.1:
+
+  o Initial release

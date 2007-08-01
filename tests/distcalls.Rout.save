@@ -1,5 +1,5 @@
 
-R version 2.6.0 Under development (unstable) (2007-05-29 r41747)
+R version 2.6.0 Under development (unstable) (2007-07-06 r42139)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -37,13 +37,18 @@ Attaching package: 'proxy'
 > proxies = pr_DB$get_entry_names()
 > 
 > ## remove special cases
-> proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles"))
+> proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles", "Levenshtein"))
 > 
 > ## create test data
 > x = matrix(1:100, 10)
 > 
-> ## test function: checks if dist(x) == dist(x,x) for all measures
-> prtest <- function(...) all(as.matrix(dist(x, ...)) == dist(x, x, ...))
+> ## test function: checks if dist(x) == dist(x,x) for all measures,
+> ## and if diag(dist(x, x)) == diag(x, x, pairwise = TRUE)
+> prtest <- function(...) {
++     CD <- dist(x, x, ...)
++     all(as.matrix(dist(x, ...)) == CD) &&
++       all(diag(CD) == dist(x, x, pairwise = TRUE, ...))
++ }
 > 
 > ## loop over all measures (except special cases)
 > for (i in proxies)
@@ -85,18 +90,6 @@ Divergence: OK.
 Kullback: OK.
 Bray: OK.
 Soergel: OK.
-LevenshteinLoading required package: cba
-Loading required package: cluster
-Loading required package: grid
-
-Attaching package: 'cba'
-
-
-	The following object(s) are masked from package:proxy :
-
-	 rowSums.dist 
-
-: OK.
 > 
 > ## Minkowski
 > writeLines("Minkowski:")
@@ -120,9 +113,9 @@ p = Inf: OK.
 > 
 > ## Stiles (gives a lot of warnings due to log)
 > tmp = dist(x, "Stiles")
-There were 23 warnings (use warnings() to see them)
+There were 26 warnings (use warnings() to see them)
 > tmp = dist(x, x, "Stiles")
-There were 46 warnings (use warnings() to see them)
+There were 50 or more warnings (use warnings() to see the first 50)
 > 
 > ## try again (almost) all measures, this time with binary data to check
 > ## conversions
@@ -165,7 +158,6 @@ Divergence: OK.
 Kullback: OK.
 Bray: OK.
 Soergel: OK.
-Levenshtein: OK.
 > for (j in c(0, 0.5, 1, 2, 3, Inf))
 +     {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
 p = 0: OK.
@@ -175,3 +167,23 @@ p = 2: OK.
 p = 3: OK.
 p = Inf: OK.
 > 
+> ## Levenshtein distance
+> s <- c("A", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog")
+> all(as.matrix(dist(s, "Levenshtein")) == dist(s, s, "Levenshtein"))
+Loading required package: cba
+Loading required package: cluster
+Loading required package: grid
+
+Attaching package: 'cba'
+
+
+	The following object(s) are masked from package:proxy :
+
+	 rowSums.dist 
+
+[1] TRUE
+> 
+> ## Test auto-conversion
+> x = iris[,-5]
+> prtest()
+[1] TRUE

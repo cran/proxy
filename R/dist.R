@@ -1,7 +1,8 @@
 dist <-
 function(x, y = NULL, method = NULL, ...,
-         diag = FALSE, upper = FALSE,
-         by_rows = TRUE, auto_convert = TRUE)
+         diag = FALSE, upper = FALSE, pairwise = FALSE,
+         by_rows = TRUE, convert_similarities = TRUE,
+         auto_convert_data_frames = TRUE)
 {
 
 ### PARAMETER HANDLING
@@ -10,6 +11,22 @@ function(x, y = NULL, method = NULL, ...,
         method <- y
         y <- NULL
     }
+
+    ## transform data frame into matrix iff all columns are atomic and either numeric (integer or double) or logical or complex
+    is.n_l_c <- function(x)
+        all(sapply(x, is.numeric)) ||
+        all(sapply(x, is.logical)) ||
+        all(sapply(x, is.complex))
+    if (is.data.frame(x) && auto_convert_data_frames && is.n_l_c(x))
+        x <- as.matrix(x)
+    if (is.data.frame(y) && !is.null(y) && auto_convert_data_frames && is.n_l_c(y))
+        y <- as.matrix(y)
+
+    ## vector handling
+    if (is.vector(x) && is.atomic(x))
+        x <- as.matrix(x)
+    if (!is.null(y) && is.vector(y) && is.atomic(y))
+        y <- as.matrix(y)
 
     ## method lookup
     reg_entry <- NULL
@@ -23,15 +40,11 @@ function(x, y = NULL, method = NULL, ...,
     if (!is.function(method))
         reg_entry <- pr_DB$get_entry(method)
 
-    ## vector handling
-    if (is.vector(x) && is.atomic(x))
-        x <- as.matrix(x)
-    if (!is.null(y) && is.vector(y) && is.atomic(y))
-        y <- as.matrix(y)
-
     ## some checks
     if (!is.data.frame(x) && !is.matrix(x) && !is.list(x))
         stop("Can only handle data frames, vectors, matrices, and lists!")
+    if ( is.data.frame(x) && !by_rows)
+        stop("Cannot transpose mixed data frames")
     if (!is.null(y)) {
         if (is.data.frame(x) && !is.data.frame(y)
             || is.matrix(x) && !is.matrix(y)
@@ -48,10 +61,12 @@ function(x, y = NULL, method = NULL, ...,
     params <- list(...)
     if (!is.null(reg_entry)) {
         if(!is.na(reg_entry$PREFUN)) {
-            tmp <- do.call(reg_entry$PREFUN, c(list(x, y, params, reg_entry)))
+            tmp <- do.call(reg_entry$PREFUN,
+                           c(list(x, y, pairwise, params, reg_entry)))
             if (!is.null(tmp)) {
                 x <- tmp$x
                 y <- tmp$y
+                pairwise <- tmp$pairwise
                 params <- tmp$p
                 reg_entry <- tmp$reg_entry
             }
@@ -62,7 +77,7 @@ function(x, y = NULL, method = NULL, ...,
     ## helper function for calling the C-level loops
     .proxy_external <- function(CFUN, x, y)
         do.call(".External",
-                c(list(CFUN, x, y,
+                c(list(CFUN, x, y, pairwise,
                        if (!is.function(method)) get(method) else method),
                   params))
 
@@ -70,8 +85,8 @@ function(x, y = NULL, method = NULL, ...,
 ### PASS-THROUGH-cases
         if (!is.null(reg_entry) && !reg_entry$loop) {
             if (reg_entry$C_FUN)
-                do.call(".Call", c(list(method), list(x), list(y), params))
-            else
+                do.call(".Call", c(list(method), list(x), list(y), pairwise, params))
+            else    ## user functions need not implement pairwise
                 do.call(method, c(list(x), list(y), params))
         } else if (is.null(y)) {
 ### LOOP WORKHORSE for auto-proximities
@@ -128,9 +143,11 @@ function(x, y = NULL, method = NULL, ...,
     if (!is.null(reg_entry)) {
         if (!is.na(reg_entry$POSTFUN))
             result <- do.call(reg_entry$POSTFUN, c(list(result, params)))
-        if (!reg_entry$distance && !(is.logical(auto_convert) && !auto_convert)) {
-            result <- if (is.function(auto_convert) || is.character(auto_convert))
-                do.call(auto_convert, list(result))
+        if (!reg_entry$distance &&
+            !(is.logical(convert_similarities) && !convert_similarities)) {
+            result <- if (is.function(convert_similarities) ||
+                          is.character(convert_similarities))
+                do.call(convert_similarities, list(result))
             else if (is.null(reg_entry$convert))
                 pr_simil2dist(result)
             else
@@ -143,12 +160,11 @@ function(x, y = NULL, method = NULL, ...,
     result <-
         if (is.matrix(result))
             structure(result, class = "crossdist")
-        else {
-            if (!inherits(result, "dist"))
-                stop("debug missing class")
-            structure(result, Diag = diag,
-                      Upper = upper)
-        }
+        else
+        if (inherits(result, "dist"))
+            structure(result, Diag = diag, Upper = upper)
+        else
+            structure(result, class = "pairdist")
     structure(result,
               method = if (is.character(method)) method else deparse(substitute(method)),
               call = match.call())
@@ -156,8 +172,9 @@ function(x, y = NULL, method = NULL, ...,
 
 simil <-
 function(x, y = NULL, method = NULL, ...,
-         diag = FALSE, upper = FALSE,
-         by_rows = TRUE, auto_convert = TRUE)
+         diag = FALSE, upper = FALSE, pairwise = FALSE,
+         by_rows = TRUE, convert_distances = TRUE,
+         auto_convert_data_frames = TRUE)
 {
     ## convenience to allow dists(x, "method")
     if ((is.function(y) || is.character(y)) && is.null(method)) {
@@ -172,15 +189,18 @@ function(x, y = NULL, method = NULL, ...,
         else
             "correlation"
 
-    ret <- dist(x, y, method, ..., diag = diag, upper = upper,
-                by_rows = by_rows, auto_convert = FALSE)
+    ret <- dist(x, y, method, ..., diag = diag, upper = upper, pairwise = pairwise,
+                by_rows = by_rows, convert_similarities = FALSE,
+                auto_convert_data_frames = auto_convert_data_frames)
 
     ## possibly convert to similarity
     reg_entry <- pr_DB$get_entry(attr(ret, "method"), stop_if_missing = FALSE)
     if (!is.null(reg_entry)) {
-        if (reg_entry$distance && !(is.logical(auto_convert) && !auto_convert)) {
-            ret <- if (is.function(auto_convert) || is.character(auto_convert))
-                do.call(auto_convert, list(ret))
+        if (reg_entry$distance &&
+            !(is.logical(convert_distances) && !convert_distances)) {
+            ret <- if (is.function(convert_distances) ||
+                       is.character(convert_distances))
+                do.call(convert_distances, list(ret))
             else if (is.null(reg_entry$convert))
                 pr_simil2dist(ret)
             else
@@ -259,6 +279,13 @@ function (x, digits = getOption("digits"),
     } else {
         cat(data.class(x), "(0)\n", sep = "")
     }
+    invisible(x)
+}
+
+print.pairdist <-
+function(x, ...)
+{
+    print(as.vector(x), ...)
     invisible(x)
 }
 

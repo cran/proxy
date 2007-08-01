@@ -16,6 +16,7 @@ S3method("subset", "dist")
 S3method("[[", "dist")
 S3method("as.matrix", "simil")
 S3method("print","crossdist")
+S3method("print","pairdist")
 
 S3method("summary","pr_DB")
 S3method("print","summary.pr_DB")

@@ -14,18 +14,19 @@ x
 y <- matrix(runif(20), 5, 4)
 y
 
-.External("R_apply_dist_matrix", x, NULL, f)
-.External("R_apply_dist_matrix", x, x, f)
-.External("R_apply_dist_matrix", x, y, f)
+.External("R_apply_dist_matrix", x, NULL, FALSE, f)
+.External("R_apply_dist_matrix", x, x, FALSE, f)
+.External("R_apply_dist_matrix", x, y, FALSE, f)
+.External("R_apply_dist_matrix", x, y, TRUE, f)
 
 # coerce
 
 z <- y * 100
 storage.mode(z) <- "integer"
-.External("R_apply_dist_matrix", x, z, f)
-.External("R_apply_dist_matrix", z, x, f)
-.External("R_apply_dist_matrix", z, z, f)
-.External("R_apply_dist_matrix", z, NULL, f)
+.External("R_apply_dist_matrix", x, z, FALSE, f)
+.External("R_apply_dist_matrix", z, x, FALSE, f)
+.External("R_apply_dist_matrix", z, z, FALSE, f)
+.External("R_apply_dist_matrix", z, NULL, FALSE, f)
 
 ## list
 
@@ -33,9 +34,10 @@ x <- unlist(apply(x, 1, list), recursive = FALSE)
 x
 y <- unlist(apply(y, 1, list), recursive = FALSE)
 
-.External("R_apply_dist_list", x, NULL, f)
-.External("R_apply_dist_list", x, x, f)
-.External("R_apply_dist_list", x, y, f)
+.External("R_apply_dist_list", x, NULL, FALSE, f)
+.External("R_apply_dist_list", x, x, FALSE, f)
+.External("R_apply_dist_list", x, y, FALSE, f)
+.External("R_apply_dist_list", x, y, TRUE, f)
 
 ## logical matrix
 
@@ -46,9 +48,10 @@ x <- t(sapply(x, ">", 0.5))
 x
 y <- t(sapply(y, ">", 0.5))
 
-.External("R_apply_dist_binary_matrix", x, NULL, f)
-.External("R_apply_dist_binary_matrix", x, x, f)
-.External("R_apply_dist_binary_matrix", x, y, f)
+.External("R_apply_dist_binary_matrix", x, NULL, FALSE, f)
+.External("R_apply_dist_binary_matrix", x, x, FALSE, f)
+.External("R_apply_dist_binary_matrix", x, y, FALSE, f)
+.External("R_apply_dist_binary_matrix", x, y, TRUE, f)
 
 ## data.frame
 
@@ -60,9 +63,10 @@ x
 y <- data.frame(unlist(apply(y, 2, list), recursive = FALSE))
 names(y) <- letters[1:4]
 
-.External("R_apply_dist_data_frame", x, NULL, f)
-.External("R_apply_dist_data_frame", x, x, f)
-.External("R_apply_dist_data_frame", x, y, f)
+.External("R_apply_dist_data_frame", x, NULL, FALSE, f)
+.External("R_apply_dist_data_frame", x, x, FALSE, f)
+.External("R_apply_dist_data_frame", x, y, FALSE, f)
+.External("R_apply_dist_data_frame", x, y, TRUE, f)
 
 #
 
@@ -85,8 +89,18 @@ all.equal(x, y)
 identical(attributes(x[[1]]), attributes(y[[1]]))
 identical(attributes(x[[2]]), attributes(y[[2]]))
 
-.External("R_apply_dist_data_frame", x, NULL, f)
-.External("R_apply_dist_data_frame", x, x, f)
-.External("R_apply_dist_data_frame", x, y, f)
+.External("R_apply_dist_data_frame", x, NULL, FALSE, f)
+.External("R_apply_dist_data_frame", x, x, FALSE, f)
+.External("R_apply_dist_data_frame", x, y, FALSE, f)
+.External("R_apply_dist_data_frame", x, y[-6,], TRUE, f)
+
+
+# test parameters
+
+f <- function(x, y, p = 1)
+    sum(x == y) / length(x) * p
+
+.External("R_apply_dist_data_frame", x, y[-6,], TRUE, f)
+.External("R_apply_dist_data_frame", x, y[-6,], TRUE, f, p = 2)
 
 ###

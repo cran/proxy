@@ -1,6 +1,6 @@
 ### Binary measures
 pr_Jaccard <- function(a, b, c, d, n) a / (n - d)
-pr_Jaccard_prefun <- function(x, y, p, reg_entry) {
+pr_Jaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -11,7 +11,7 @@ pr_Jaccard_prefun <- function(x, y, p, reg_entry) {
             storage.mode(y) <- "logical"
     }
 
-    list(x = x, y = y, p = p, reg_entry = reg_entry)
+    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_bjaccard",
                 names = c("Jaccard","binary"),
@@ -264,13 +264,13 @@ pr_DB$set_entry(FUN = "pr_BraunBlanquet",
 
 
 pr_cos <- function(x, y) crossprod(x, y) / sqrt(crossprod(x) * crossprod(y))
-pr_cos_prefun <- function(x, y, p, reg_entry) {
+pr_cos_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
         reg_entry$FUN <- "pr_cos"
     }
-    list(x = x, y = y, p = p, reg_entry = reg_entry)
+    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_cosine",
                 names = c("cosine", "angular"),
@@ -289,7 +289,7 @@ pr_eJaccard <- function(x, y) {
     tmp <- crossprod(x, y)
     tmp / (crossprod(x) + crossprod(y) - tmp)
 }
-pr_eJaccard_prefun <- function(x, y, p, reg_entry) {
+pr_eJaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -297,6 +297,7 @@ pr_eJaccard_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = 0 + x,
          y = if (!is.null(y)) 0 + y else NULL,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_ejaccard",
@@ -315,7 +316,7 @@ In Proc. SPIE Conference on Data Mining and Knowledge Discovery, Orlando, volume
                 description = "The extended Jaccard Similarity (C implementation; yields Jaccard for binary x,y).")
 
 pr_fJaccard <- function(x, y) sum(pmin(x, y)) / sum(pmax(x, y))
-pr_fJaccard_prefun <- function(x, y, p, reg_entry) {
+pr_fJaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (any(x < 0 || x > 1))
         stop("Valid range for fuzzy measure: 0 <= x <= 1")
     if (!is.null(y) && any(y < 0 || y > 1))
@@ -328,6 +329,7 @@ pr_fJaccard_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = 0 + x,
          y = if (!is.null(y)) 0 + y else NULL,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_fuzzy_dist",
@@ -479,7 +481,7 @@ pr_Gower <- function(x, y, l = NA, f = NA, m = NA, weights = NA) {
 
     drop(crossprod(s, weights)) / drop(crossprod(d, weights))
 }
-pr_Gower_prefun <- function(x, y, p, reg_entry) {
+pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
     ## transform x and y
     x <- as.data.frame(x)
     if (!is.null(y))
@@ -505,20 +507,39 @@ pr_Gower_prefun <- function(x, y, p, reg_entry) {
     }
 
     ## scale metric types
+    RANGE <- function(x) {
+        ## compute scale
+        ret <- sapply(x[m],
+                      function(i) max(i, na.rm = TRUE) - min(i, na.rm = TRUE))
+        ## do not scale when range == 0
+        ret[ret == 0] <- 1
+        ret
+    }
     if (any(m)) {
-        x[m] <- x[m] / rep(sapply(x[m], function(i) max(i) - min(i)), each = nrow(x))
-        if (!is.null(y))
-            y[m] <- y[m] / rep(sapply(y[m], function(i) max(i) - min(i)), each = nrow(x))
+        if (!is.null(p$ranges) && is.null(p$ranges.x))
+            p$ranges.x <- p$ranges
+        r <- if(is.null(p$ranges.x))
+            RANGE(x[m])
+        else
+            rep(p$ranges.x, length.out = length(m))
+        x[m] <- x[m] / rep(r, each = nrow(x))
+        if (!is.null(y)) {
+            if (!is.null(p$ranges) && is.null(p$ranges.y))
+                p$ranges.y <- p$ranges
+            r <- if(is.null(p$ranges.y))
+                RANGE(y[m])
+            else
+                rep(p$ranges.y, length.out = length(m))
+            y[m] <- y[m] / rep(r, each = nrow(y))
+        }
     }
 
     ## weights
-    weights <- if (length(p) < 1)
-        rep(1, ncol(x))
-    else
-        unlist(p)
+    weights <- rep(if (is.null(p$weights)) 1 else p$weights,
+                   length.out = ncol(x))
 
     p <- list(l = l, f = f, m = m, weights = weights)
-    list(x = x, y = y, p = p, reg_entry = reg_entry)
+    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "pr_Gower",
                 names = "Gower",
@@ -535,8 +556,17 @@ pr_DB$set_entry(FUN = "pr_Gower",
 w_k are variable weights. d_ijk is 0 for missings or a pair of FALSE logicals, and 1 else.
 s_ijk is 1 for a pair of TRUE logicals or matching factor levels,
 and the absolute difference for metric variables.
-Metric variables are scaled with the range,
-ordinal variables converted to ranks r_i and
-the scores z_i = (r_i - 1) / (max r_i - 1) are taken as metric variables.")
+Each metric variable is scaled with its corresponding range,
+provided the latter is not 0.
+Ordinal variables are converted to ranks r_i and
+the scores z_i = (r_i - 1) / (max r_i - 1) are taken as metric variables.
+Note that in the latter case, unlike the definition of Gower, just the
+internal integer codes are taken as the ranks, and not what rank() would
+return. This is for compatibility with daisy() of the cluster package, and
+will make a slight difference in case of ties. The weights w_k
+can be specified by passing a numeric vector (recycled as needed) to
+the 'weights' argument. Ranges for scaling the columns of x and y
+can be specified using the 'ranges.x'/'ranges.y'
+arguments (or simply 'ranges' for both x and y).")
 
 

@@ -1,5 +1,5 @@
 pr_Euclidean <- function(x, y) sqrt(crossprod(x - y))
-pr_Euclidean_prefun <- function(x, y, p, reg_entry) {
+pr_Euclidean_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -7,6 +7,7 @@ pr_Euclidean_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_euclidean_dist",
@@ -23,9 +24,9 @@ pr_DB$set_entry(FUN = "R_euclidean_dist",
                 description = "The Euclidean Distance (C implementation with compensation for excluded components)")
 
 pr_Mahalanobis <- function(x, y, cov) sqrt(mahalanobis(x, y, cov))
-pr_Mahalanobis_prefun <- function(x, y, p, reg_entry) {
+pr_Mahalanobis_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (length(p) < 1) p <- list(cov(x, y))
-    list(x = x, y = y, p = p, reg_entry = reg_entry)
+    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "pr_Mahalanobis",
                 names = "Mahalanobis",
@@ -54,7 +55,7 @@ pr_DB$set_entry(FUN = "pr_Bhjattacharyya",
                 description = "The Bhjattacharyya Distance")
 
 pr_Manhattan <- function(x, y) sum(abs(x - y))
-pr_Manhattan_prefun <- function(x, y, p, reg_entry) {
+pr_Manhattan_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -62,6 +63,7 @@ pr_Manhattan_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_manhattan_dist",
@@ -78,7 +80,7 @@ pr_DB$set_entry(FUN = "R_manhattan_dist",
                 description = "The Manhattan/City-Block/Taxi/L1-Distance (C implementation with compensation for excluded components)")
 
 pr_supremum <- function(x, y) max(abs(x - y))
-pr_supremum_prefun <- function(x, y, p, reg_entry) {
+pr_supremum_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -86,6 +88,7 @@ pr_supremum_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_maximum_dist",
@@ -102,7 +105,7 @@ pr_DB$set_entry(FUN = "R_maximum_dist",
                 description = "The Maximum/Supremum/Chebyshev Distance (C implementation)")
 
 pr_Minkowski <- function(x, y, p = 2) (sum(abs(x - y) ^ p)) ^ (1/p)
-pr_Minkowski_prefun <- function(x, y, p, reg_entry) {
+pr_Minkowski_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (length(p) < 1)
         stop("Argument 'p' mandatory!")
     p <- p[[1]]
@@ -115,6 +118,7 @@ pr_Minkowski_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_minkowski_dist",
@@ -131,7 +135,7 @@ pr_DB$set_entry(FUN = "R_minkowski_dist",
                 description = "The Minkowski Distance (C implementation with compensation for excluded components)")
 
 pr_Canberra <- function(x, y) {tmp <- abs(x - y) / abs(x + y); sum(tmp[!is.nan(tmp)])}
-pr_Canberra_prefun <- function(x, y, p, reg_entry) {
+pr_Canberra_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -139,6 +143,7 @@ pr_Canberra_prefun <- function(x, y, p, reg_entry) {
     }
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
+         pairwise = pairwise,
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_canberra_dist",
@@ -219,16 +224,15 @@ pr_DB$set_entry(FUN = "pr_Soergel",
                 reference = "Cox, T.F., and Cox, M.A.A. (2001). Multidimensional Scaling. Chapmann and Hall.",
                 description = "The Soergel Distance")
 
-pr_Levenshtein <- function(x, y, p, reg_entry) {
+pr_Levenshtein_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!require("cba")) stop("Need package cba!")
-    x <- as.list(as.character(x))
-    if (!is.null(y))
-        y <- as.list(as.character(y))
-    list(x = x, y = y, p = p, reg_entry = reg_entry)
+    if (pairwise)
+        stop("Pairwise distances not implemented by sdist()!")
+    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "sdists",
                 names = "Levenshtein",
-                PREFUN = "pr_Levenshtein",
+                PREFUN = "pr_Levenshtein_prefun",
                 convert = "pr_dist2simil",
                 distance = TRUE,
                 loop = FALSE,

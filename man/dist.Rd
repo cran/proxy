@@ -20,9 +20,11 @@
 }
 \usage{
 dist(x, y = NULL, method = NULL, ..., diag = FALSE, upper = FALSE,
-      by_rows = TRUE, auto_convert = TRUE)
+     pairwise = FALSE, by_rows = TRUE, convert_similarities = TRUE,
+     auto_convert_data_frames = TRUE)
 simil(x, y = NULL, method = NULL, ..., diag = FALSE, upper = FALSE,
-      by_rows = TRUE, auto_convert = TRUE)
+      pairwise = FALSE, by_rows = TRUE, convert_distances = TRUE,
+      auto_convert_data_frames = TRUE)
 
 pr_dist2simil(x)
 pr_simil2dist(x)
@@ -47,11 +49,16 @@ as.simil(x, FUN = NULL)
   \item{upper}{logical value indicating whether the upper triangle of the
     distance/similarity matrix should be printed by
     \code{\link{print.dist}}/\code{\link{print.simil}}}
+  \item{pairwise}{logical value indicating whether distances should be
+    computed for the pairs of \code{x} and \code{y} only.}
   \item{by_rows}{logical indicating whether proximities between rows, or
     columns should be computed.}
-  \item{auto_convert}{logical indicating whether distances should be
-    automatically converted into similarities (and the other way round)
-    if needed.}
+  \item{convert_similarities, convert_distances}{logical indicating
+    whether distances should be automatically converted into
+    similarities (and the other way round) if needed.}
+  \item{auto_convert_data_frames}{logical indicating whether data frames
+    should be converted to matrices if all variables are numeric,
+    or all are logical, or all are complex.}
   \item{FUN}{optional function to be used by \code{as.dist} and
     \code{as.simil}. If \code{NULL}, it is looked up in the method
     registry. If there is none specified there, \code{FUN} defaults to
@@ -67,7 +74,11 @@ as.simil(x, FUN = NULL)
   involving the rows within which they occur. If some columns are
   excluded in calculating a Euclidean, Manhattan, Canberra or
   Minkowski distance, the sum is scaled up proportionally to the
-  number of columns used.
+  number of columns used (compare \code{\link[stats]{dist}} in
+  package \pkg{stats}).
+
+  Data frames are silently coerced to matrix if all columns are of
+  (same) mode \code{numeric} or \code{logical}.
 
   Distance measures can be used with \code{simil}, and similarity
   measures with \code{dist}. In these cases, the result is transformed
@@ -112,6 +123,10 @@ dist(x, method = "fJaccard")
 
 ### cross distances
 dist(x, x, method = "Jaccard")
+
+### pairwise (diagonal)
+dist(x, x, method = "Jaccard", 
+	 pairwise = TRUE)
 
 ### this is the same but less efficient
 as.matrix(stats::dist(x, method = "binary"))
