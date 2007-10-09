@@ -1,3 +1,9 @@
+Changes to 0.3:
+
+  o fixed Gower-dissimilarity
+  o fixed dist/simil subsetting
+  o self-proximities now default to NA
+
 Changes to 0.2:
 
   o data frames are auto-converted to matrices if all variables are 

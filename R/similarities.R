@@ -509,7 +509,7 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
     ## scale metric types
     RANGE <- function(x) {
         ## compute scale
-        ret <- sapply(x[m],
+        ret <- sapply(x,
                       function(i) max(i, na.rm = TRUE) - min(i, na.rm = TRUE))
         ## do not scale when range == 0
         ret[ret == 0] <- 1

@@ -44,7 +44,7 @@ function(x, subset, ...)
 {
     if (missing(subset))
         return(x)
-    .Call("R_subset_dist", x, subset)
+    .Call("R_subset_dist", x, unique(subset))
 }
 
 ##

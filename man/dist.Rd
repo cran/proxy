@@ -5,6 +5,7 @@
 \alias{print.dist}
 \alias{print.crosssimil}
 \alias{print.crossdist}
+\alias{as.matrix.dist}
 \alias{as.matrix.simil}
 \alias{pr_simil2dist}
 \alias{pr_dist2simil}
@@ -31,6 +32,9 @@ pr_simil2dist(x)
 
 as.dist(x, FUN = NULL)
 as.simil(x, FUN = NULL)
+
+\method{as.matrix}{dist}(x, diag = NA, \dots)
+\method{as.matrix}{simil}(x, diag = NA, \dots)
 }
 \arguments{
   \item{x}{For \code{dist} and \code{simil}, a numeric matrix object, a data frame, or a list. A vector
@@ -43,9 +47,12 @@ as.simil(x, FUN = NULL)
     proximity measure. A list of all available measures can be obtained
     using \code{\link{pr_DB}} (see examples). The default for \code{dist} is
     \code{"Euclidean"}, and for \code{simil} \code{"correlation"}.}
-  \item{diag}{logical value indicating whether the diagonal of the distance/similarity
-          matrix should be printed by
-	  \code{\link{print.dist}}/\code{\link{print.simil}}.}
+  \item{diag}{logical value indicating whether the diagonal of the
+    distance/similarity matrix should be printed by
+    \code{\link{print.dist}}/\code{\link{print.simil}}.
+
+    In the context of \code{as.matrix} the value to use on the diagonal
+    representing self-proximities.}
   \item{upper}{logical value indicating whether the upper triangle of the
     distance/similarity matrix should be printed by
     \code{\link{print.dist}}/\code{\link{print.simil}}}
@@ -87,7 +94,8 @@ as.simil(x, FUN = NULL)
   Objects of class \code{simil} and \code{dist} can be converted one in
   another using \code{as.dist} and \code{as.simil}, respectively.
 
-  Distance and similarity objects can conveniently be subsetted (see examples).
+  Distance and similarity objects can conveniently be subsetted 
+  (see examples). Note that duplicate indexes are silently ignored.
 }
 \value{
   Auto distances/similarities are returned as an object of class \code{dist}/\code{simil} and 
@@ -152,6 +160,10 @@ dist(z, z)
 ## subsetting
 d[[1:2]]
 subset(d, c(1,3,4))
+d[[c(1,2,2)]]	    # duplicate index gets ignored
+
+## transformations and self-proximities
+as.matrix(as.simil(d, function(x) exp(-x)), diag = 1)
 
 ## row and column indexes
 row.dist(d)

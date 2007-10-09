@@ -16,18 +16,6 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
     int i, j, k, si, sj, nx, ns;
     SEXP x = R_x, r, d;
 
-    if (LENGTH(s) < 2) {
-	PROTECT(r = allocVector(REALSXP, 0));
-
-	copyMostAttrib(x, r);
-	setAttrib(r, install("Size"), ScalarInteger(1));
-	setAttrib(r, install("Labels"), R_NilValue);
-
-	UNPROTECT(1);
-
-	return r;
-    }
-
     nx = 1 + (int) sqrt(2*LENGTH(x));
     if (LENGTH(x) != nx*(nx-1)/2)
 	error("'x' invalid length");
@@ -56,7 +44,7 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	    error("'s' invalid subscript(s)");
 	else
 	    INTEGER(s)[k]--;
-    
+
     PROTECT(r = allocVector(REALSXP, ns*(ns-1)/2));
 
     k = 0;
@@ -65,7 +53,7 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	for (j = i+1; j < ns; j++) {
 	    sj = INTEGER(s)[j];
 	    if (si == sj)
-		REAL(r)[k++] = 0;
+		REAL(r)[k++] = NA_REAL;
 	    else 
 		REAL(r)[k++] = 
 		(si > sj)    ? REAL(x)[si+sj*(nx-1)-sj*(sj+1)/2-1]
@@ -83,7 +71,7 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	
 	setAttrib(r, install("Labels"), (t = allocVector(STRSXP, ns)));
 	for (k = 0; k < ns; k++)
-	    SET_STRING_ELT(t, k, STRING_ELT(d, k));
+	    SET_STRING_ELT(t, k, STRING_ELT(d, INTEGER(s)[k]));
     }
     
     UNPROTECT(3);

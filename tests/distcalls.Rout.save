@@ -1,5 +1,5 @@
 
-R version 2.6.0 Under development (unstable) (2007-07-06 r42139)
+R version 2.5.1 Patched (2007-09-16 r43016)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -17,7 +17,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-Loading required package: rcompgen
 > #################################
 > ## Test for dist calls
 > ##################################
@@ -106,16 +105,16 @@ p = Inf: OK.
 > ## Mahalanobis (need non-singular matrix)
 > x = as.matrix(iris[1:50,-5])
 > prtest("Mahalanobis")
-[1] TRUE
+[1] NA
 > 
 > ## produce binary matrix
 > x = matrix(rbinom(100,1,0.7), 10)
 > 
 > ## Stiles (gives a lot of warnings due to log)
 > tmp = dist(x, "Stiles")
-There were 26 warnings (use warnings() to see them)
+There were 22 warnings (use warnings() to see them)
 > tmp = dist(x, x, "Stiles")
-There were 50 or more warnings (use warnings() to see the first 50)
+There were 44 warnings (use warnings() to see them)
 > 
 > ## try again (almost) all measures, this time with binary data to check
 > ## conversions
@@ -179,11 +178,19 @@ Attaching package: 'cba'
 
 	The following object(s) are masked from package:proxy :
 
+	 col.dist,
+	 colMeans.dist,
+	 colSums.dist,
+	 row.dist,
+	 rowMeans.dist,
 	 rowSums.dist 
 
-[1] TRUE
+[1] NA
 > 
 > ## Test auto-conversion
 > x = iris[,-5]
 > prtest()
-[1] TRUE
+[1] NA
+> 
+> 
+> 

@@ -45,4 +45,8 @@ subset(x, c(1,3,5))
 x[[c(1,3,5)]]
 x[c(1,3,5)]                         # as usual
 
+x[[-1]]                             # drop subscripts
+
+x[[1]]                              # empty
+
 ###

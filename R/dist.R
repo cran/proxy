@@ -208,8 +208,8 @@ function(x, y = NULL, method = NULL, ...,
         }
     }
 
-    class(ret) <- c(if (inherits(ret, "crossdist")) "crosssimil" else "simil",
-                    class(ret))
+    class(ret) <- unique(c(if (inherits(ret, "crossdist")) "crosssimil" else "simil",
+                           class(ret)))
     ret
 }
 
@@ -221,14 +221,19 @@ function (x, ...)
     ret
 }
 
+# note that a simil object must always also be a dist
+# object for method dispatch
+
 as.simil <-
 function(x, FUN = NULL)
 {
-    if (inherits(x, c("dist", "crossdist"))) {
+    if (inherits(x, c("simil", "crosssimil")))
+        x
+    else if (inherits(x, c("dist", "crossdist"))) {
         class(x) <- if (inherits(x, "dist"))
             c("simil", class(x))
         else
-            c("crosssimil", class(x))
+            c("crosssimil", setdiff(class(x), "crossdist"))
         if (!is.null(FUN))
             FUN(x)
         else {
@@ -238,20 +243,18 @@ function(x, FUN = NULL)
             else
                 pr_dist2simil(x)
         }
-    } else if (inherits(x, "simil"))
-        x
-    else
+    } else
         structure(stats::as.dist(x), class = c("simil", "dist"))
 }
 
 as.dist <-
 function(x, FUN = NULL)
 {
-    if (inherits(x, c("simil","crosssimil"))) {
+    if (inherits(x, c("simil", "crosssimil"))) {
         class(x) <- if (inherits(x, "simil"))
-            c("dist", class(x))
+            setdiff(class(x), "simil")
         else
-            c("crossdist", class(x))
+            c("crossdist", setdiff(class(x), "crosssimil"))
         if (!is.null(FUN))
             FUN(x)
         else {
@@ -261,10 +264,20 @@ function(x, FUN = NULL)
             else
                 pr_simil2dist(x)
         }
-    } else if (inherits(x, "dist"))
+    } else if (inherits(x, c("dist", "crossdist")))
         x
     else
         stats::as.dist(x)
+}
+
+# as we do not know if the object is the result of some
+# user-defined transformation the values of d(x,x) or
+# s(x,x) are not defined.
+
+as.matrix.simil <- as.matrix.dist <- function(x, diag = NA, ...) {
+    x <- stats:::as.matrix.dist(x)
+    diag(x) <- diag
+    x
 }
 
 print.crossdist <-
