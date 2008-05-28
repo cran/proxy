@@ -444,9 +444,9 @@ pr_DB$set_entry(FUN = "pr_Pearson",
                 loop = TRUE,
                 C_FUN = FALSE,
                 abcd = FALSE,
-                formula = "sum_ij (o_i - e_i)^2 / e_i",
+                formula = "sqrt{Chi / (n + Chi)}",
                 reference = "Anderberg, M.R. (1973). Cluster Analysis for Applicaitons. Academic Press.",
-                description = "Contingency Coefficient")
+                description = "Contingency Coefficient. Chi is the Chi-Squared statistic.")
 
 
 pr_Gower <- function(x, y, l = NA, f = NA, m = NA, weights = NA) {

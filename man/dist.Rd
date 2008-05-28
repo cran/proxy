@@ -114,10 +114,14 @@ as.simil(x, FUN = NULL)
 \author{David Meyer \email{David.Meyer@R-project.org} and  
         Christian Buchta \email{Christian.Buchta@wu-wien.ac.at}}
 
-\seealso{\code{\link[stats]{dist}} for compatibility information.}
+\seealso{\code{\link[stats]{dist}} for compatibility information, and
+  \code{\link{pr_DB}} for the proximity data base.}
 \examples{
 ### show available proximities
 summary(pr_DB)
+
+### get more information about a particular one
+pr_DB$get_entry("Jaccard")
 
 ### binary data
 x <- matrix(sample(c(FALSE, TRUE), 8, rep = TRUE), ncol = 2)

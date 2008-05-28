@@ -4,6 +4,8 @@
 ### IDEA: use lexical scope with nested functions to create an
 ### S3-"object" that exposes the data structure only through accessor functions.
 
+.FUNCall <- function(f) function(...) f(...)
+
 registry <-
 function(index_field = "names", entry_class = NULL,
          validity_FUN = NULL, registry_class = NULL,
@@ -28,8 +30,8 @@ function(index_field = "names", entry_class = NULL,
     .make_field <-
     function(default = NA, type = NA, is_mandatory = FALSE,
              is_modifiable = TRUE, validity_FUN = NULL)
-        structure(list(default = default,
-                       type = type,
+        structure(list(type = type,
+                       default = default,
                        is_mandatory = is_mandatory,
                        is_modifiable = is_modifiable,
                        validity_FUN = validity_FUN),
@@ -150,8 +152,8 @@ function(index_field = "names", entry_class = NULL,
             stop("Mandatory fields should have no default.")
 
         ## create field entry
-        field <- .make_field(default = default,
-                             type = type,
+        field <- .make_field(type = type,
+                             default = default,
                              is_mandatory = is_mandatory,
                              validity_FUN = validity_FUN)
 
@@ -379,27 +381,27 @@ function(index_field = "names", entry_class = NULL,
                is_mandatory = TRUE, is_modifiable = FALSE)
 
     ## return class
-    structure(list(get_field = .get_field,
-                   get_fields = .get_fields,
-                   get_field_names = .get_field_names,
-                   set_field = .set_field,
+    structure(list(get_field = .FUNCall(.get_field),
+                   get_fields = .FUNCall(.get_fields),
+                   get_field_names = .FUNCall(.get_field_names),
+                   set_field = .FUNCall(.set_field),
 
-                   entry_exists = .entry_exists,
-                   get_entry = .get_entry,
-                   get_entries = .get_entries,
-                   get_entry_names = .get_entry_names,
-                   set_entry = .set_entry,
-                   modify_entry = .modify_entry,
-                   delete_entry = .delete_entry,
-                   n_of_entries = .n_of_entries,
+                   entry_exists = .FUNCall(.entry_exists),
+                   get_entry = .FUNCall(.get_entry),
+                   get_entries = .FUNCall(.get_entries),
+                   get_entry_names = .FUNCall(.get_entry_names),
+                   set_entry = .FUNCall(.set_entry),
+                   modify_entry = .FUNCall(.modify_entry),
+                   delete_entry = .FUNCall(.delete_entry),
+                   n_of_entries = .FUNCall(.n_of_entries),
 
-                   get_field_entries = .get_field_entries,
+                   get_field_entries = .FUNCall(.get_field_entries),
 
-                   get_permissions = .get_permissions,
-                   restrict_permissions = .restrict_permissions,
-                   seal_entries = .seal_entries,
-                   get_sealed_entry_names = .get_sealed_entry_names,
-                   get_sealed_field_names = .get_sealed_field_names
+                   get_permissions = .FUNCall(.get_permissions),
+                   restrict_permissions = .FUNCall(.restrict_permissions),
+                   seal_entries = .FUNCall(.seal_entries),
+                   get_sealed_entry_names = .FUNCall(.get_sealed_entry_names),
+                   get_sealed_field_names = .FUNCall(.get_sealed_field_names)
                    ),
               class = c(registry_class, "registry"))
 }
