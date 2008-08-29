@@ -182,10 +182,14 @@ pr_DB$set_entry(FUN = "pr_Divergence",
                 C_FUN = FALSE,
                 abcd = FALSE,
                 formula = "sum_i (x_i - y_i)^2 / (x_i + y_i)^2",
-                reference = "Cox, T.F., and Cox, M.A.A. (2001. Multidimensional Scaling. Chapmann and Hall.",
+                reference = "Cox, T.F., and Cox, M.A.A. (2001). Multidimensional Scaling. Chapmann and Hall.",
                 description = "The Divergence Distance")
 
-pr_KullbackLeibler <- function(x, y) sum(x * log((x / sum(x) / (y / sum(y))) / sum(x)))
+pr_KullbackLeibler <- function(x,y) {
+    p <- x / sum(x);
+    q <- y / sum(y);
+    sum(p * log(p / q))
+}
 pr_DB$set_entry(FUN = "pr_KullbackLeibler",
                 names = c("Kullback", "Leibler"),
                 distance = TRUE,
