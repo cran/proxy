@@ -33,7 +33,7 @@ pr_simil2dist(x)
 as.dist(x, FUN = NULL)
 as.simil(x, FUN = NULL)
 
-\method{as.matrix}{dist}(x, diag = NA, \dots)
+\method{as.matrix}{dist}(x, diag = 0, \dots)
 \method{as.matrix}{simil}(x, diag = NA, \dots)
 }
 \arguments{
@@ -89,12 +89,12 @@ as.simil(x, FUN = NULL)
 
   Distance measures can be used with \code{simil}, and similarity
   measures with \code{dist}. In these cases, the result is transformed
-  accordingly using the specified conversion functions (default:
+  accordingly using the specified coercion functions (default:
   \eqn{pr_simil2dist(d) = 1 - s} and \eqn{pr_dist2simil(s) = 1 / (1 - d)}).
   Objects of class \code{simil} and \code{dist} can be converted one in
   another using \code{as.dist} and \code{as.simil}, respectively.
 
-  Distance and similarity objects can conveniently be subsetted 
+  Distance and similarity objects can conveniently be subset
   (see examples). Note that duplicate indexes are silently ignored.
 }
 \value{
@@ -111,8 +111,8 @@ as.simil(x, FUN = NULL)
   Sokol, R.S. and Sneath P.H.A (1963), \emph{Principles of Numerical
   Taxonomy}, W. H. Freeman and Co., San Francisco.
 }
-\author{David Meyer \email{David.Meyer@R-project.org} and  
-        Christian Buchta \email{Christian.Buchta@wu-wien.ac.at}}
+\author{David Meyer \email{David.Meyer@R-project.org}
+  and Christian Buchta \email{Christian.Buchta@wu-wien.ac.at}}
 
 \seealso{\code{\link[stats]{dist}} for compatibility information, and
   \code{\link{pr_DB}} for the proximity data base.}

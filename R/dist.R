@@ -84,6 +84,11 @@ function(x, y = NULL, method = NULL, ...,
     result <-
 ### PASS-THROUGH-cases
         if (!is.null(reg_entry) && !reg_entry$loop) {
+            if (!by_rows && !is.list(x)) {
+                x <- t(x)
+                if (!is.null(y))
+                    y <- t(y)
+            }
             if (reg_entry$C_FUN)
                 do.call(".Call", c(list(method), list(x), list(y), pairwise, params))
             else    ## user functions need not implement pairwise
@@ -270,11 +275,22 @@ function(x, FUN = NULL)
         stats::as.dist(x)
 }
 
-# as we do not know if the object is the result of some
-# user-defined transformation the values of d(x,x) or
-# s(x,x) are not defined.
+## as we do not know if the object is the result of some
+## user-defined transformation the values of
+## s(x,x) are not defined.
 
-as.matrix.simil <- as.matrix.dist <- function(x, diag = NA, ...) {
+as.matrix.simil <-
+function(x, diag = NA, ...) {
+    x <- stats:::as.matrix.dist(x)
+    diag(x) <- diag
+    x
+}
+
+## however, it seems reasonable to assume that d(x,x)=0,
+## which is also the default in stats.
+
+as.matrix.dist <-
+function(x, diag = 0, ...) {
     x <- stats:::as.matrix.dist(x)
     diag(x) <- diag
     x

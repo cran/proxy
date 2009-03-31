@@ -1,4 +1,8 @@
-Chahnges to 0.4:
+Changes to 0.4-2:
+
+  o as.matrix.dist by default now uses 0 for diagonal elements
+
+Changes to 0.4:
 
   o fix a bug in Kullback-Leibler-distance
 

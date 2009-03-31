@@ -105,7 +105,7 @@ p = Inf: OK.
 > ## Mahalanobis (need non-singular matrix)
 > x = as.matrix(iris[1:50,-5])
 > prtest("Mahalanobis")
-[1] NA
+[1] TRUE
 > 
 > ## produce binary matrix
 > x = matrix(rbinom(100,1,0.7), 10)
@@ -185,12 +185,12 @@ Attaching package: 'cba'
 	 rowMeans.dist,
 	 rowSums.dist 
 
-[1] NA
+[1] TRUE
 > 
 > ## Test auto-conversion
 > x = iris[,-5]
 > prtest()
-[1] NA
+[1] TRUE
 > 
 > 
 > 

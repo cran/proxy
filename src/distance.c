@@ -367,7 +367,7 @@ SEXP R_dists(SEXP x, SEXP y, SEXP d, SEXP f, SEXP p) {
     int c;
 
     c = INTEGER(f)[0];
-    if (c < 0 || c > sizeof(dfun) / sizeof(*dfun))
+    if (c < 1 || c > sizeof(dfun) / sizeof(*dfun))
 	error("'f' invalid index");
      
     return dists(x, y, d, dfun[c-1], p);
