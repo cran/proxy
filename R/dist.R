@@ -324,6 +324,6 @@ function(x)
 
 pr_dist2simil <-
 function(x)
-    1 / (1 - x)
+    1 / (1 + x)
 
 ###

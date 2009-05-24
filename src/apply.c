@@ -176,8 +176,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	
 	setAttrib(r, install("Size"), ScalarInteger(nx));
 	
-	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
-	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
+	if (!isNull(d = getAttrib(x, R_NamesSymbol)))
+	    setAttrib(r, install("Labels"), d);
 	// fixme: package?
 	setAttrib(r, R_ClassSymbol, mkString("dist"));
     } else 
@@ -186,14 +186,14 @@ SEXP R_apply_dist_list(SEXP p) {
 	
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
 	
-	d1 = getAttrib(x, R_DimNamesSymbol);
-	d2 = getAttrib(y, R_DimNamesSymbol);
+	d1 = getAttrib(x, R_NamesSymbol);
+	d2 = getAttrib(y, R_NamesSymbol);
 	if (!isNull(d1) || !isNull(d2)) {
 	    SEXP d;
 
 	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
-	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
-	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
+	    SET_VECTOR_ELT(d, 0, d1);
+	    SET_VECTOR_ELT(d, 1, d2);
 	}
     } else {
 	if (nx != ny)

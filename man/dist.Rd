@@ -90,7 +90,7 @@ as.simil(x, FUN = NULL)
   Distance measures can be used with \code{simil}, and similarity
   measures with \code{dist}. In these cases, the result is transformed
   accordingly using the specified coercion functions (default:
-  \eqn{pr_simil2dist(d) = 1 - s} and \eqn{pr_dist2simil(s) = 1 / (1 - d)}).
+  \eqn{pr_simil2dist(d) = 1 - s} and \eqn{pr_dist2simil(s) = 1 / (1 + d)}).
   Objects of class \code{simil} and \code{dist} can be converted one in
   another using \code{as.dist} and \code{as.simil}, respectively.
 

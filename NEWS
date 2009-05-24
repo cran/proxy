@@ -1,3 +1,9 @@
+Changes to 0.4-3:
+
+  o pr_simil2dist now computes 1 / (1 + x) instead of 1 / (1 - x)
+
+  o fix labeling bug for list data with named components
+
 Changes to 0.4-2:
 
   o as.matrix.dist by default now uses 0 for diagonal elements
