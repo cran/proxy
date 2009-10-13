@@ -213,7 +213,7 @@ pr_DB$set_entry(FUN = "pr_BrayCurtis",
                 abcd = FALSE,
                 formula = "sum_i |x_i - y_i| / sum_i (x_i + y_i)",
                 reference = "Bray J.R., Curtis J.T. (1957). An ordination of the upland forest of the southern Winsconsin. Ecological Monographies, 27, pp. 325--349",
-                description = "The Bray/Curtis Distance")
+                description = "The Bray/Curtis dissimilarity. Note that it is not a distance since it vioalates the triangle inequality.")
 
 pr_Soergel <- function(x, y) sum(abs(x - y)) / sum(max(x, y))
 pr_DB$set_entry(FUN = "pr_Soergel",
@@ -247,6 +247,83 @@ pr_DB$set_entry(FUN = "sdists",
                 description = "Wrapper for sdists() in the cba-package (C implementation).")
 
 
+pr_Podani <- function(x, y) {
+    a <- b <- c <- d <- 0
+    n <- length(x)
+    for (i in seq_len(n - 1))
+        for(j in (i+1):n) {
+            a <- a + (x[i] < x[j] && y[i] < y[j] || x[i] > x[j] && y[i] > y[j])
+            b <- b + (x[i] < x[j] && y[i] > y[j] || x[i] > x[j] && y[i] < y[j])
+            c <- c + (x[i] == x[j] && y[i] == y[j] &&
+                      (x[i] == 0 && y[i] == 0 || x[i] > 0 && y[i] > 0))
 
+            z <- sum(x[i] == 0, x[j] == 0, y[i] == 0, y[j] == 0)
+            d <- d + ((x[i] == x[j] || y[i] == y[j]) && z > 0 && z < 4)
+        }
+    1 - 2 * (a - b + c - d) / (n * (n - 1))
+}
 
+pr_DB$set_entry(FUN = "pr_Podani",
+                names = c("podani","discordance"),
+                distance = TRUE,
+                convert = "pr_dist2simil",
+                type = "metric",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = FALSE,
+                formula = "1 - 2 * (a - b + c - d) / (n * (n - 1))",
+                reference = "Podani, J. (1997). A measure of discordance for partially ranked data when presence/absence is also meaningful. Coenoses 12: 127--130.",
+                description = "The Podany measure of discordance is defined on ranks with ties. In the formula, for two given objects x and y, n is the number of variables, a is is the number of pairs of variables ordered identically, b the number of pairs reversely ordered, c the number of pairs tied in both x and y (corresponding to either joint presence or absence), and d the number of all pairs of variables tied at least for one of the objects compared such that one, two, or thee scores are zero.")
+
+pr_chord <- function(x, y) sqrt(2 * (1 - crossprod(x, y) / sqrt(crossprod(x) * crossprod(y))))
+pr_DB$set_entry(FUN = pr_chord,
+                names = "Chord",
+                distance = TRUE,
+                convert = "pr_dist2simil",
+                type = "metric",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = FALSE,
+                formula = "sqrt(2 * (1 - xy / sqrt(xx * yy)))",
+                reference = "Orloci, L. 1967. An agglomerative method for classification of plant communities. J. Ecol 55:193--206.",
+                description = "The Chord distance.")
+
+pr_geodesic <- function(x, y) acos(crossprod(x, y) / sqrt(crossprod(x) * crossprod(y)))
+pr_DB$set_entry(FUN = pr_geodesic,
+                names = "Geodesic",
+                distance = TRUE,
+                convert = "pr_dist2simil",
+                type = "metric",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = FALSE,
+                formula = "arccos(xy / sqrt(xx * yy))",
+                reference = "Orloci, L. 1967. Data centering: a review and evaluation with reference to component analysis. Syst. Zool. 16:208--212.",
+                description = "The geoedesic distance, i.e. the angle between x and y.")
+
+pr_whittaker <- function(x, y) sum(abs(x / sum(x) - y / sum(y))) / 2
+pr_DB$set_entry(FUN = pr_whittaker,
+                names = "Whittaker",
+                distance = TRUE,
+                convert = "pr_dist2simil",
+                type = "metric",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = FALSE,
+                formula = "sum_i |x_i / sum_i x - y_i / sum_i y| / 2",
+                reference = "Whittaker, R.H. (1952) A study of summer foliage insect communities in the Great Smoky Mountains. Ecological Monographs 22, pp. 1--44.",
+                description = "The Whittaker distance.")
+
+pr_hellinger <- function(x, y) sqrt(crossprod(sqrt(x / sum(x)) - sqrt(y / sum(y))))
+pr_DB$set_entry(FUN = pr_hellinger,
+                names = "Hellinger",
+                distance = TRUE,
+                convert = "pr_dist2simil",
+                type = "metric",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = FALSE,
+                formula = "sqrt(sum_i (sqrt(x_i / sum_i x) - sqrt(y_i / sum_i y)) ^ 2)",
+                reference = "Rao, C.R. (1995) Use of Hellinger distance in graphical displays. In E.-M. Tiit, T. Kollo, & H. Niemi (Ed.): Multivariate statistics and matrices in statistics. Leiden (Netherland): Brill Academic Publisher. pp. 143--161.",
+                description = "The Hellinger distance.")
 

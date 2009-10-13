@@ -1,8 +1,17 @@
+Changes to 0.4-4:
+
+  o Podani, Chord, geodesic, Hellinger and Whittaker dissimilarities added.
+
+  o Fager/McGown anf Faith similarities added.
+
 Changes to 0.4-3:
 
   o pr_simil2dist now computes 1 / (1 + x) instead of 1 / (1 - x)
 
   o fix labeling bug for list data with named components
+
+  o the C-level dist functions now conform with those in package stats
+    with respect to NA handling (pairwise-complete observations).
 
 Changes to 0.4-2:
 

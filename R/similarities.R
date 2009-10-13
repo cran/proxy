@@ -14,7 +14,7 @@ pr_Jaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_bjaccard",
-                names = c("Jaccard","binary"),
+                names = c("Jaccard","binary","Reyssac","Roux"),
                 distance = FALSE,
                 PREFUN = "pr_Jaccard_prefun",
                 convert = "pr_simil2dist",
@@ -65,6 +65,20 @@ pr_DB$set_entry(FUN = "pr_Mountford",
                 reference = "Mountford, M.D. (1962). An index of similarity and its application to classificatory probems. In P.W. Murphy (ed.), Progress in Soil Zoology, pp. 43--50. Butterworth, London.",
                 description = "The Mountford Similarity for binary data.")
 
+pr_fagerMcgowan <- function(a, b, c, d, n) a / sqrt((a + b) * (a + c)) - 1 / (2 * sqrt(a + c))
+pr_DB$set_entry(FUN = "pr_fagerMcgowan",
+                names = c("Fager", "McGowan"),
+                distance = FALSE,
+                convert = "pr_simil2dist",
+                type = "binary",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = TRUE,
+                formula = "a / sqrt((a + b)(a + c)) - 1 / 2 sqrt(a + c)",
+                reference = "Fager, E. W. and McGowan, J. A. (1963). Zooplankton species groups in the North Pacific. Science, N. Y. 140: 453-460",
+                description = "The Fager / McGowan distance.")
+
+
 pr_RusselRao <- function(a, b, c, d, n) a / n
 pr_DB$set_entry(FUN = "pr_RusselRao",
                 names = c("Russel","Rao"),
@@ -103,6 +117,19 @@ pr_DB$set_entry(FUN = "pr_Hamman",
                 formula = "([a + d] - [b + c]) / n",
                 reference = "Hamann, U. (1961). Merkmalbestand und Verwandtschaftsbeziehungen der Farinosae. Ein Beitrag zum System der Monokotyledonen. Willdenowia, 2, pp. 639-768.",
                 description = "The Hamman Matching Similarity for binary data. It is the proportion difference of the concordant and discordant pairs.")
+
+pr_Faith <- function(a, b, c, d, n) (a + d / 2) / n
+pr_DB$set_entry(FUN = "pr_Faith",
+                names = "Faith",
+                distance = FALSE,
+                convert = "pr_simil2dist",
+                type = "binary",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = TRUE,
+                formula = "(a + d/2) / n",
+                reference = "Belbin, L., Marshall, C. & Faith, D.P. (1983). Representing relationships by automatic assignment of colour. The Australian Computing Journal 15, 160-163.",
+                description = "The Faith similarity")
 
 pr_RogersTanimoto <- function(a, b, c, d, n) (a + d) / (a + 2 * (b + c) + d)
 pr_DB$set_entry(FUN = "pr_RogersTanimoto",
@@ -156,7 +183,7 @@ pr_DB$set_entry(FUN = "pr_Stiles",
                 abcd = TRUE,
                 formula = "log(n(|ad-bc| - 0.5n)^2 / [(a + b)(c + d)(a + c)(b + d)])",
                 reference = "Stiles, H.E. (1961). The association factor in information retrieval. Communictions of the ACM, 8, 1, pp. 271--279.",
-                description = "The Stiles Similarity (used for information retrieval)")
+                description = "The Stiles Similarity (used for information retrieval). Identical to the logarithm of Krylov's distance.")
 
 pr_Michael <- function(a, b, c, d, n)
     4 * (a * d - b * c) / ((a + d) * (a + d) + (b + c) * (b + c))

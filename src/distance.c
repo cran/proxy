@@ -8,7 +8,7 @@
 // note: the runtime in the symmetric case is
 //       not always optimal.
 //
-// ceeboo 2007
+// ceeboo 2007, 2008, 2009
 
 #define both_non_NA(a,b) (!ISNAN(a) && !ISNAN(b))
 #define both_FINITE(a,b) (R_FINITE(a) && R_FINITE(b))
@@ -146,6 +146,7 @@ static double canberra(double *x, double *y, int nx, int ny, int nc)
     return dist;
 }
 
+// FIXME why treat not both finite as NA?
 static double binary(double *x, double *y, int nx, int ny, int nc)
 {
     if (x == y) return 0;
@@ -154,7 +155,7 @@ static double binary(double *x, double *y, int nx, int ny, int nc)
 
     total = count = dist = 0;
     for (j = 0; j < nc; j++) {
-	if (both_FINITE(*x, *y)) {
+	if (both_non_NA(*x, *y)) {
 	    if (*x || *y) {
 		count++;
 		if (!(*x && *y))
@@ -178,7 +179,7 @@ static double matching(double *x, double *y, int nx, int ny, int nc)
 
     total = count = 0;
     for (j = 0; j < nc; j++) {
-	if (both_FINITE(*x, *y)) {
+	if (both_non_NA(*x, *y)) {
 	    if (*x != *y) 
 		count++;
             total++;
@@ -215,6 +216,7 @@ static double fuzzy(double *x, double *y, int nx, int ny, int nc)
         y += ny;
     }
     if (count == 0) return NA_REAL;
+    if (!R_FINITE(smin)) return NA_REAL;
     dist = smin / smax;
     if (ISNAN(dist)) return 0;
     return 1-dist;
@@ -228,7 +230,7 @@ static double mutual(double *x, double *y, int nx, int ny, int nc)
 
     total = count = cx = cy = 0;
     for (j = 0; j < nc; j++) {
-	if (both_FINITE(*x, *y)) {
+	if (both_non_NA(*x, *y)) {
 	    if (*x && *y) 
 		count++;
 	    cx += (*x && 1);
@@ -258,6 +260,7 @@ static double mutual(double *x, double *y, int nx, int ny, int nc)
     if (total != nc) dist /= ((double)total/nc);
     return dist ;
 }
+
 
 // wrapper
 
@@ -538,9 +541,9 @@ SEXP R_bjaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
     return r;
 }
 
-/* calculate extended Jaccard similarities, i.e the
- * scalar product divided by the squared Euclidean
- * distance minus the scalar product. 
+/* calculate Jaccard similarities extended to real-
+ * valued data, i.e the scalar product divided by the
+ * squared Euclidean distance plus the scalar product.
  */
 
 SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
@@ -624,7 +627,7 @@ SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
 	z = 0;
 	l = 0;
 	for (k = 0; k < nc; k++) {
-	    if (ISNAN(x[i+k*nx]))
+	    if (!R_FINITE(x[i+k*nx]))
 		continue;
 	    l++;
 	    z+= pow(x[i+k*nx], 2);
@@ -642,7 +645,7 @@ SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
 	    z = 0;
 	    l = 0;
 	    for (k = 0; k < nc; k++) {
-		if (ISNAN(y[j+k*ny]))
+		if (!R_FINITE(y[j+k*ny]))
 		    continue;
 		l++;
 		z+= pow(y[j+k*ny], 2);
@@ -656,14 +659,14 @@ SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
 	    }
 	}
 	for (i = i; i < nz; i++) {
-	    if (ISNAN(t) || ISNAN(s[i])) {
+	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
 		REAL(r)[n++] = NA_REAL;
 		continue;
 	    }
 	    l = 0;
 	    z = 0;
 	    for (k = 0; k < nc; k++) {
-	        if (ISNAN(x[i+k*nx]) || ISNAN(y[j+k*ny]))
+	        if (!R_FINITE(x[i+k*nx]) || !R_FINITE(y[j+k*ny]))
 		    continue;
 		l++;
 		z+= x[i+k*nx] * y[j+k*ny];
@@ -775,7 +778,7 @@ SEXP R_cosine(SEXP R_x, SEXP R_y, SEXP R_d) {
 	z = 0;
 	l = 0;
 	for (k = 0; k < nc; k++) {
-	    if (ISNAN(x[i+k*nx]))
+	    if (!R_FINITE(x[i+k*nx]))
 		continue;
 	    l++;
 	    z+= pow(x[i+k*nx], 2);
@@ -793,7 +796,7 @@ SEXP R_cosine(SEXP R_x, SEXP R_y, SEXP R_d) {
 	    z = 0;
 	    l = 0;
 	    for (k = 0; k < nc; k++) {
-		if (ISNAN(y[j+k*ny]))
+		if (!R_FINITE(y[j+k*ny]))
 		    continue;
 		l++;
 		z+= pow(y[j+k*ny], 2);
@@ -807,14 +810,14 @@ SEXP R_cosine(SEXP R_x, SEXP R_y, SEXP R_d) {
 	    }
 	}
 	for (i = i; i < nz; i++) {
-	    if (ISNAN(t) || ISNAN(s[i])) {
+	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
 		REAL(r)[n++] = NA_REAL;
 		continue;
 	    }
 	    l = 0;
 	    z = 0;
 	    for (k = 0; k < nc; k++) {
-	        if (ISNAN(x[i+k*nx]) || ISNAN(y[j+k*ny]))
+	        if (!R_FINITE(x[i+k*nx]) || !R_FINITE(y[j+k*ny]))
 		    continue;
 		l++;
 		z+= x[i+k*nx] * y[j+k*ny];
