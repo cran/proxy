@@ -67,7 +67,7 @@ pr_Manhattan_prefun <- function(x, y, pairwise, p, reg_entry) {
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_manhattan_dist",
-                names = c("Manhattan", "City-Block", "L1", "Taxi"),
+                names = c("Manhattan", "City-Block", "L1", "taxi"),
                 PREFUN = "pr_Manhattan_prefun",
                 distance = TRUE,
                 convert = "pr_dist2simil",
@@ -174,7 +174,7 @@ pr_DB$set_entry(FUN = "pr_WaveHedges",
 
 pr_Divergence <- function(x, y) {tmp <- (x - y)^2 / (x + y)^2; sum(tmp[!is.nan(tmp)])}
 pr_DB$set_entry(FUN = "pr_Divergence",
-                names = "Divergence",
+                names = "divergence",
                 distance = TRUE,
                 convert = "pr_dist2simil",
                 type = "metric",
@@ -264,7 +264,7 @@ pr_Podani <- function(x, y) {
 }
 
 pr_DB$set_entry(FUN = "pr_Podani",
-                names = c("podani","discordance"),
+                names = c("Podani","discordance"),
                 distance = TRUE,
                 convert = "pr_dist2simil",
                 type = "metric",

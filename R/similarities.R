@@ -94,7 +94,7 @@ pr_DB$set_entry(FUN = "pr_RusselRao",
 
 pr_SimpleMatching <- function(a, b, c, d, n) (a + d) / n
 pr_DB$set_entry(FUN = "pr_SimpleMatching",
-                names = c("Simple Matching", "Sokal/Michener"),
+                names = c("simple matching", "Sokal/Michener"),
                 distance = FALSE,
                 convert = "pr_simil2dist",
                 type = "binary",
@@ -264,7 +264,7 @@ pr_DB$set_entry(FUN = "pr_Ochiai",
 pr_Simpson <- function(a, b, c, d, n)
     a / min((a + b), (a + c))
 pr_DB$set_entry(FUN = "pr_Simpson",
-                names = "Simson",
+                names = "Simpson",
                 distance = FALSE,
                 convert = "pr_simil2dist",
                 type = "binary",
@@ -395,7 +395,7 @@ pr_ChiSquared <- function(x, y) {
     sum((tab - exp) ^ 2 / exp)
 }
 pr_DB$set_entry(FUN = "pr_ChiSquared",
-                names = "Chi-Squared",
+                names = "Chi-squared",
                 distance = FALSE,
                 convert = "pr_simil2dist",
                 type = "nominal",
@@ -412,7 +412,7 @@ pr_PhiSquared <- function(x, y) {
     sum((tab - exp) ^ 2 / exp) / sum(tab)
 }
 pr_DB$set_entry(FUN = "pr_PhiSquared",
-                names = "PhiSquared",
+                names = "Phi-squared",
                 distance = FALSE,
                 convert = "pr_simil2dist",
                 type = "nominal",
@@ -464,7 +464,7 @@ pr_Pearson <- function(x, y) {
     sqrt(Chi / (sum(tab) + Chi))
 }
 pr_DB$set_entry(FUN = "pr_Pearson",
-                names = c("Pearson","Contingency"),
+                names = c("Pearson","contingency"),
                 distance = FALSE,
                 convert = "pr_simil2dist",
                 type = "nominal",
