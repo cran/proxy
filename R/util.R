@@ -22,9 +22,13 @@ function(x)
 "names<-.dist" <-
 function(x, value)
 {
-    if (length(value) != attr(x, "Size"))
-        stop("dimension of 'x' and length of 'value' do not conform")
-    attr(x, "Labels") <- as.character(value)
+    if (is.null(value))
+        attr(x, "Labels") <- NULL
+    else {
+        if (length(value) != attr(x, "Size"))
+            stop("dimension of 'x' and length of 'value' do not conform")
+        attr(x, "Labels") <- as.character(value)
+    }
     x
 }
 

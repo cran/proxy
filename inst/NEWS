@@ -1,3 +1,11 @@
+Changes to 0.4-6:
+
+  o bugfix: names<-.dist did not accept NULL as assignment.
+
+Changes to 0.4-5:
+
+  o small vignette with an overview of existing methods added.
+
 Changes to 0.4-4:
 
   o Podani, Chord, geodesic, Hellinger and Whittaker dissimilarities added.
