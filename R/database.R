@@ -18,7 +18,9 @@ function(x)
 }
 
 ### create registry
-pr_DB <- registry(registry_class = "pr_DB", validity_FUN = ".abcd_and_binary")
+pr_DB <- registry(registry_class = "pr_DB",
+                  entry_class = "proxy_registry_entry",
+                  validity_FUN = ".abcd_and_binary")
 
 ## create fields
 pr_DB$set_field("FUN", is_mandatory = TRUE, validity_FUN = ".function_or_character")

@@ -38,7 +38,10 @@ function(x, y = NULL, method = NULL, ...,
         else
             "Euclidean"
     if (!is.function(method))
-        reg_entry <- pr_DB$get_entry(method)
+        reg_entry <- if (inherits(method, "proxy_registry_entry"))
+            method
+        else
+            pr_DB$get_entry(method)
 
     ## some checks
     if (!is.data.frame(x) && !is.matrix(x) && !is.list(x))

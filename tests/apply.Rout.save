@@ -1,13 +1,12 @@
 
-R version 2.5.1 Patched (2007-07-13 r42223)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.14.1 Patched (2012-01-12 r58095)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i486-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -24,11 +23,9 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
+The following object(s) are masked from 'package:stats':
 
-	The following object(s) are masked from package:stats :
-
-	 as.dist,
-	 dist 
+    as.dist, dist
 
 > 
 > set.seed(20070630)
@@ -39,12 +36,12 @@ Attaching package: 'proxy'
 > 
 > x <- matrix(runif(20), 5, 4)
 > x
-           [,1]        [,2]      [,3]      [,4]
-[1,] 0.45958286 0.246283120 0.6662151 0.2658000
-[2,] 0.83906910 0.002929016 0.3449861 0.4751930
-[3,] 0.03770360 0.300615279 0.1399626 0.5143060
-[4,] 0.76216756 0.963274350 0.4358104 0.7934745
-[5,] 0.12115883 0.452265898 0.8005272 0.3062947
+          [,1]        [,2]      [,3]      [,4]
+[1,] 0.4595829 0.246283120 0.6662151 0.2658000
+[2,] 0.8390691 0.002929016 0.3449861 0.4751930
+[3,] 0.0377036 0.300615279 0.1399626 0.5143060
+[4,] 0.7621676 0.963274350 0.4358104 0.7934745
+[5,] 0.1211588 0.452265898 0.8005272 0.3062947
 > y <- matrix(runif(20), 5, 4)
 > y
           [,1]       [,2]      [,3]       [,4]
@@ -120,7 +117,7 @@ Attaching package: 'proxy'
 [1] 0.839069104 0.002929016 0.344986119 0.475192965
 
 [[3]]
-[1] 0.03770360 0.30061528 0.13996262 0.51430601
+[1] 0.0377036 0.3006153 0.1399626 0.5143060
 
 [[4]]
 [1] 0.7621676 0.9632744 0.4358104 0.7934745
@@ -269,9 +266,6 @@ f    6                  E
 [6] "Component 2: Lengths: 5, 6"                                          
 [7] "Component 2: Lengths (5, 6) differ (string compare on first 5)"      
 [8] "Component 2: 4 string mismatches"                                    
-Warning message:
-longer object length
-	is not a multiple of shorter object length in: nax != nay 
 > identical(attributes(x[[1]]), attributes(y[[1]]))
 [1] TRUE
 > identical(attributes(x[[2]]), attributes(y[[2]]))

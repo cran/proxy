@@ -43,7 +43,7 @@ as.simil(x, FUN = NULL)
     \code{simil}, respectively, or a numeric matrix. For
     \code{pr_dist2simil} and \code{pr_simil2dist}, any numeric vector.}
   \item{y}{\code{NULL}, or a similar object than \code{x}}
-  \item{method}{a function, or a mnemonic string referencing the
+  \item{method}{a function, a registry entry, or a mnemonic string referencing the
     proximity measure. A list of all available measures can be obtained
     using \code{\link{pr_DB}} (see examples). The default for \code{dist} is
     \code{"Euclidean"}, and for \code{simil} \code{"correlation"}.}

@@ -1,13 +1,12 @@
 
-R version 2.5.1 Patched (2007-07-13 r42223)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.14.1 Patched (2012-01-12 r58095)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i486-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -26,11 +25,9 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
+The following object(s) are masked from 'package:stats':
 
-	The following object(s) are masked from package:stats :
-
-	 as.dist,
-	 dist 
+    as.dist, dist
 
 > 
 > set.seed(20070630)
@@ -45,19 +42,19 @@ Attaching package: 'proxy'
 > y[2,] <- x[1,] <- 0
 > 
 > x
-        [,1]        [,2]      [,3]      [,4]
-A 0.00000000 0.000000000 0.0000000 0.0000000
-B 0.83906910 0.002929016 0.3449861 0.4751930
-C 0.03770360 0.300615279 0.1399626 0.5143060
-D 0.76216756 0.963274350 0.4358104 0.7934745
-E 0.12115883 0.452265898 0.8005272 0.3062947
+       [,1]        [,2]      [,3]      [,4]
+A 0.0000000 0.000000000 0.0000000 0.0000000
+B 0.8390691 0.002929016 0.3449861 0.4751930
+C 0.0377036 0.300615279 0.1399626 0.5143060
+D 0.7621676 0.963274350 0.4358104 0.7934745
+E 0.1211588 0.452265898 0.8005272 0.3062947
 > y
-        [,1]      [,2]      [,3]      [,4]
-A 0.45958286 0.2462831 0.6662151 0.2658000
-B 0.00000000 0.0000000 0.0000000 0.0000000
-C 0.03770360 0.3006153 0.1399626 0.5143060
-D 0.76216756 0.9632744 0.4358104 0.7934745
-E 0.12115883 0.4522659 0.8005272 0.3062947
+       [,1]      [,2]      [,3]      [,4]
+A 0.4595829 0.2462831 0.6662151 0.2658000
+B 0.0000000 0.0000000 0.0000000 0.0000000
+C 0.0377036 0.3006153 0.1399626 0.5143060
+D 0.7621676 0.9632744 0.4358104 0.7934745
+E 0.1211588 0.4522659 0.8005272 0.3062947
 > 
 > ## dist extensions
 > 
@@ -413,7 +410,7 @@ E 0 1 0 0 0
 Testing R_matching_dist
 
 Error in stats:::dist(x, method = gsub("R_|_dist", "", f)) : 
-	invalid distance method
+  invalid distance method
   A B C D
 B 1      
 C 1 1    
@@ -436,7 +433,7 @@ E 1 1 1 1 0
 Testing R_fuzzy_dist
 
 Error in stats:::dist(x, method = gsub("R_|_dist", "", f)) : 
-	invalid distance method
+  invalid distance method
           A         B         C         D
 B 1.0000000                              
 C 1.0000000 0.6719380                    
@@ -459,7 +456,7 @@ E 0.3562808 1 0.5844973 0.6036897 0.0000000
 Testing R_mutual_dist
 
 Error in stats:::dist(x, method = gsub("R_|_dist", "", f)) : 
-	invalid distance method
+  invalid distance method
   A B C D
 B 0      
 C 0 0    

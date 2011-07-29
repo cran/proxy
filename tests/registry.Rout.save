@@ -1,13 +1,12 @@
 
-R version 2.5.1 Patched (2007-07-03 r42117)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.14.1 Patched (2012-01-12 r58095)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i486-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -24,11 +23,9 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
+The following object(s) are masked from 'package:stats':
 
-	The following object(s) are masked from package:stats :
-
-	 as.dist,
-	 dist 
+    as.dist, dist
 
 > 
 > .my_check_fun <- function(x) if (x$Z == 999 && x$New2 == 999) stop("No evil allowed!")
@@ -45,29 +42,29 @@ An object of class "registry" with no entry.
 > R$set_field("Z", default = 123)
 > R$get_fields()
 $names
-      default NA
          type character
+      default NA
  is_mandatory TRUE
 is_modifiable TRUE
  validity_FUN NULL
 
 $X
-      default NA
          type logical
+      default NA
  is_mandatory TRUE
 is_modifiable TRUE
  validity_FUN NULL
 
 $Y
-      default NA
          type character
+      default NA
  is_mandatory FALSE
 is_modifiable TRUE
  validity_FUN NULL
 
 $Z
-      default 123
          type NA
+      default 123
  is_mandatory FALSE
 is_modifiable TRUE
  validity_FUN NULL
@@ -99,8 +96,8 @@ Z     chars
 > ## add new field
 > R$set_field("New")
 > R$get_field("New")
-      default NA
          type NA
+      default NA
  is_mandatory FALSE
 is_modifiable TRUE
  validity_FUN NULL
@@ -116,8 +113,8 @@ is_modifiable TRUE
 > ## add field with fixed alternatives
 > R$set_field("New3", type = c("A", "B"))
 > R$get_field("New")
-      default NA
          type NA
+      default NA
  is_mandatory FALSE
 is_modifiable TRUE
  validity_FUN NULL

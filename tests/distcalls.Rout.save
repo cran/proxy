@@ -1,13 +1,12 @@
 
-R version 2.5.1 Patched (2007-09-16 r43016)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.14.1 Patched (2012-01-12 r58095)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i486-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -25,11 +24,9 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
+The following object(s) are masked from 'package:stats':
 
-	The following object(s) are masked from package:stats :
-
-	 as.dist,
-	 dist 
+    as.dist, dist
 
 > 
 > ## get all measures
@@ -56,9 +53,11 @@ Jaccard: OK.
 Kulczynski1: OK.
 Kulczynski2: OK.
 Mountford: OK.
+Fager: OK.
 Russel: OK.
-Simple Matching: OK.
+simple matching: OK.
 Hamman: OK.
+Faith: OK.
 Tanimoto: OK.
 Dice: OK.
 Phi: OK.
@@ -67,14 +66,14 @@ Mozley: OK.
 Yule: OK.
 Yule2: OK.
 Ochiai: OK.
-Simson: OK.
+Simpson: OK.
 Braun-Blanquet: OK.
 cosine: OK.
 eJaccard: OK.
 fJaccard: OK.
 correlation: OK.
-Chi-Squared: OK.
-PhiSquared: OK.
+Chi-squared: OK.
+Phi-squared: OK.
 Tschuprow: OK.
 Cramer: OK.
 Pearson: OK.
@@ -85,10 +84,15 @@ Manhattan: OK.
 supremum: OK.
 Canberra: OK.
 Wave: OK.
-Divergence: OK.
+divergence: OK.
 Kullback: OK.
 Bray: OK.
 Soergel: OK.
+Podani: OK.
+Chord: OK.
+Geodesic: OK.
+Whittaker: OK.
+Hellinger: OK.
 > 
 > ## Minkowski
 > writeLines("Minkowski:")
@@ -112,9 +116,9 @@ p = Inf: OK.
 > 
 > ## Stiles (gives a lot of warnings due to log)
 > tmp = dist(x, "Stiles")
-There were 22 warnings (use warnings() to see them)
+There were 25 warnings (use warnings() to see them)
 > tmp = dist(x, x, "Stiles")
-There were 44 warnings (use warnings() to see them)
+There were 50 or more warnings (use warnings() to see the first 50)
 > 
 > ## try again (almost) all measures, this time with binary data to check
 > ## conversions
@@ -124,9 +128,11 @@ Jaccard: OK.
 Kulczynski1: OK.
 Kulczynski2: OK.
 Mountford: OK.
+Fager: OK.
 Russel: OK.
-Simple Matching: OK.
+simple matching: OK.
 Hamman: OK.
+Faith: OK.
 Tanimoto: OK.
 Dice: OK.
 Phi: OK.
@@ -135,14 +141,14 @@ Mozley: OK.
 Yule: OK.
 Yule2: OK.
 Ochiai: OK.
-Simson: OK.
+Simpson: OK.
 Braun-Blanquet: OK.
 cosine: OK.
 eJaccard: OK.
 fJaccard: OK.
 correlation: OK.
-Chi-Squared: OK.
-PhiSquared: OK.
+Chi-squared: OK.
+Phi-squared: OK.
 Tschuprow: OK.
 Cramer: OK.
 Pearson: OK.
@@ -153,10 +159,15 @@ Manhattan: OK.
 supremum: OK.
 Canberra: OK.
 Wave: OK.
-Divergence: OK.
+divergence: OK.
 Kullback: OK.
 Bray: OK.
 Soergel: OK.
+Podani: OK.
+Chord: OK.
+Geodesic: OK.
+Whittaker: OK.
+Hellinger: OK.
 > for (j in c(0, 0.5, 1, 2, 3, Inf))
 +     {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
 p = 0: OK.
@@ -170,21 +181,7 @@ p = Inf: OK.
 > s <- c("A", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog")
 > all(as.matrix(dist(s, "Levenshtein")) == dist(s, s, "Levenshtein"))
 Loading required package: cba
-Loading required package: cluster
 Loading required package: grid
-
-Attaching package: 'cba'
-
-
-	The following object(s) are masked from package:proxy :
-
-	 col.dist,
-	 colMeans.dist,
-	 colSums.dist,
-	 row.dist,
-	 rowMeans.dist,
-	 rowSums.dist 
-
 [1] TRUE
 > 
 > ## Test auto-conversion
