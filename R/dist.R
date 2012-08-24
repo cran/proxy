@@ -82,7 +82,10 @@ function(x, y = NULL, method = NULL, ...,
         do.call(".External",
                 c(list(CFUN, x, y, pairwise,
                        if (!is.function(method)) get(method) else method),
-                  params))
+                  params,
+                  list(PACKAGE = "proxy")
+                  )
+                )
 
     result <-
 ### PASS-THROUGH-cases
@@ -93,7 +96,8 @@ function(x, y = NULL, method = NULL, ...,
                     y <- t(y)
             }
             if (reg_entry$C_FUN)
-                do.call(".Call", c(list(method), list(x), list(y), pairwise, params))
+                do.call(".Call", c(list(method), list(x), list(y), pairwise, params,
+                                   list(PACKAGE = reg_entry$PACKAGE)))
             else    ## user functions need not implement pairwise
                 do.call(method, c(list(x), list(y), params))
         } else if (is.null(y)) {

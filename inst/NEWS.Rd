@@ -1,5 +1,12 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-8}{
+  \itemize{
+    \item PACKAGE="proxy" argument added to all
+    .External-calls. "PACKAGE" field added to the registry, defaulting
+    to "proxy", and used by .Call().
+  }
+}
 \section{Changes in version 0.4-7}{
   \itemize{
     \item the method argument of \code{dist()} now also accepts a

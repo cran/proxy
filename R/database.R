@@ -32,6 +32,7 @@ pr_DB$set_field("type", type = c("binary", "nominal", "ordinal", "metric", "othe
                 default = "other")
 pr_DB$set_field("loop", type = "logical", default = TRUE)
 pr_DB$set_field("C_FUN", type = "logical", default = FALSE)
+pr_DB$set_field("PACKAGE", type = "character", default = "proxy")
 pr_DB$set_field("abcd", type = "logical", default = FALSE)
 pr_DB$set_field("formula", type = "character")
 pr_DB$set_field("reference", type = "character")
