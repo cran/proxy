@@ -82,8 +82,7 @@ function(x, y = NULL, method = NULL, ...,
         do.call(".External",
                 c(list(CFUN, x, y, pairwise,
                        if (!is.function(method)) get(method) else method),
-                  params,
-                  list(PACKAGE = "proxy")
+                  params
                   )
                 )
 
@@ -107,15 +106,15 @@ function(x, y = NULL, method = NULL, ...,
                 x <- t(x)
             if (is.matrix(x) && !is.null(reg_entry) && reg_entry$abcd)
                 ## binary matrix
-                .proxy_external("R_apply_dist_binary_matrix", x != 0, NULL)
+                .proxy_external(R_apply_dist_binary_matrix, x != 0, NULL)
             else if (is.matrix(x))
                 ## real, integer matrix
-                .proxy_external("R_apply_dist_matrix", x, NULL)
+                .proxy_external(R_apply_dist_matrix, x, NULL)
             else if (is.list(x) && !(is.data.frame(x) && by_rows))
                 ## list
-                .proxy_external("R_apply_dist_list", x, NULL)
+                .proxy_external(R_apply_dist_list, x, NULL)
             else ## data frame (by rows)
-                .proxy_external("R_apply_dist_data_frame", x, NULL)
+                .proxy_external(R_apply_dist_data_frame, x, NULL)
 
         } else {
 ### LOOP WORKHORSE for cross-proximities
@@ -126,15 +125,15 @@ function(x, y = NULL, method = NULL, ...,
             }
             if (is.matrix(x) && !is.null(reg_entry) && reg_entry$abcd)
                 ## binary matrices
-                .proxy_external("R_apply_dist_binary_matrix", x != 0, y != 0)
+                .proxy_external(R_apply_dist_binary_matrix, x != 0, y != 0)
             else if (is.matrix(x))
                 ## real, integer matrices
-                .proxy_external("R_apply_dist_matrix", x, y)
+                .proxy_external(R_apply_dist_matrix, x, y)
             else if (is.list(x) && !(is.data.frame(x) && by_rows))
                 ## lists
-                .proxy_external("R_apply_dist_list", x, y)
+                .proxy_external(R_apply_dist_list, x, y)
             else ## data frames (by rows)
-                .proxy_external("R_apply_dist_data_frame", x, y)
+                .proxy_external(R_apply_dist_data_frame, x, y)
 
         }
 

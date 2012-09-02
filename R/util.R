@@ -34,11 +34,11 @@ function(x, value)
 
 row.dist <-
 function(x)
-    .Call("R_row_dist", x, FALSE)
+    .Call(R_row_dist, x, FALSE)
 
 col.dist <-
 function(x)
-    .Call("R_row_dist", x, TRUE)
+    .Call(R_row_dist, x, TRUE)
 
 ##
 
@@ -48,7 +48,7 @@ function(x, subset, ...)
 {
     if (missing(subset))
         return(x)
-    .Call("R_subset_dist", x, unique(subset))
+    .Call(R_subset_dist, x, unique(subset))
 }
 
 ##
@@ -56,7 +56,7 @@ function(x, subset, ...)
 rowSums.dist <-
 colSums.dist <-
 function(x, na.rm = FALSE)
-    .Call("R_rowSums_dist", x, na.rm)
+    .Call(R_rowSums_dist, x, na.rm)
 
 ##
 
