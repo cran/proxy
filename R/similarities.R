@@ -65,7 +65,7 @@ pr_DB$set_entry(FUN = "pr_Mountford",
                 reference = "Mountford, M.D. (1962). An index of similarity and its application to classificatory probems. In P.W. Murphy (ed.), Progress in Soil Zoology, pp. 43--50. Butterworth, London.",
                 description = "The Mountford Similarity for binary data.")
 
-pr_fagerMcgowan <- function(a, b, c, d, n) a / sqrt((a + b) * (a + c)) - 1 / (2 * sqrt(a + c))
+pr_fagerMcgowan <- function(a, b, c, d, n) a / sqrt((a + b) * (a + c)) - sqrt(a + c) / 2
 pr_DB$set_entry(FUN = "pr_fagerMcgowan",
                 names = c("Fager", "McGowan"),
                 distance = FALSE,
@@ -74,7 +74,7 @@ pr_DB$set_entry(FUN = "pr_fagerMcgowan",
                 loop = TRUE,
                 C_FUN = FALSE,
                 abcd = TRUE,
-                formula = "a / sqrt((a + b)(a + c)) - 1 / 2 sqrt(a + c)",
+                formula = "a / sqrt((a + b)(a + c)) - sqrt(a + c) / 2",
                 reference = "Fager, E. W. and McGowan, J. A. (1963). Zooplankton species groups in the North Pacific. Science, N. Y. 140: 453-460",
                 description = "The Fager / McGowan distance.")
 
