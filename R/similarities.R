@@ -4,6 +4,7 @@ pr_Jaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
+        reg_entry$abcd <- TRUE
         reg_entry$FUN <- "pr_Jaccard"
     } else {
         storage.mode(x) <- "logical"

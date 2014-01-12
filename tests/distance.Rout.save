@@ -1,8 +1,7 @@
 
-R version 2.14.1 Patched (2012-01-12 r58095)
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i486-pc-linux-gnu (32-bit)
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -25,7 +24,7 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
-The following object(s) are masked from 'package:stats':
+The following objects are masked from 'package:stats':
 
     as.dist, dist
 
@@ -157,12 +156,12 @@ B 4.000000
 C 4.000000 2.356997                  
 D 4.000000 1.409165 2.157322         
 E 4.000000 2.348575 1.682606 1.824656
-  A        B        C        D        E
-A 0 4.000000 4.000000 4.000000 4.000000
-B 4 0.000000 2.356997 1.409165 2.348575
-C 4 2.356997 0.000000 2.157322 1.682606
-D 4 1.409165 2.157322 0.000000 1.824656
-E 4 2.348575 1.682606 1.824656 0.000000
+   A        B        C        D        E
+A NA 4.000000 4.000000 4.000000 4.000000
+B  4 0.000000 2.356997 1.409165 2.348575
+C  4 2.356997 0.000000 2.157322 1.682606
+D  4 1.409165 2.157322 0.000000 1.824656
+E  4 2.348575 1.682606 1.824656 0.000000
          A  B        C        D        E
 A 4.000000 NA 4.000000 4.000000 4.000000
 B 1.868964  4 2.356997 1.409165 2.348575
@@ -258,7 +257,7 @@ E 0 0 0 0 0
 > ## again but via user interfaces
 > 
 > r <- .Call("R_minkowski_dist", x, NULL, FALSE, NULL)
-> all.equal(c(r), c(stats:::dist(x, method = "minkowski", p = 1)))
+> all.equal(c(r), c(stats::dist(x, method = "minkowski", p = 1)))
 [1] TRUE
 > r
           A         B         C         D
@@ -288,7 +287,7 @@ E 0.7192137 1.6802466 1.1036817 2.003914 0.000000
 > for (f in dfun) {
 +     cat("\nTesting ",f,"\n\n",sep="")
 +     r <- do.call(".Call", list(f, x, NULL, FALSE))
-+     s <- try(stats:::dist(x, method = gsub("R_|_dist", "", f)))
++     s <- try(stats::dist(x, method = gsub("R_|_dist", "", f)))
 +     if (!inherits(s, "try-error"))
 +         print(all.equal(c(r), c(s)))
 +     print(r)
@@ -409,7 +408,7 @@ E 0 1 0 0 0
 
 Testing R_matching_dist
 
-Error in stats:::dist(x, method = gsub("R_|_dist", "", f)) : 
+Error in stats::dist(x, method = gsub("R_|_dist", "", f)) : 
   invalid distance method
   A B C D
 B 1      
@@ -432,7 +431,7 @@ E 1 1 1 1 0
 
 Testing R_fuzzy_dist
 
-Error in stats:::dist(x, method = gsub("R_|_dist", "", f)) : 
+Error in stats::dist(x, method = gsub("R_|_dist", "", f)) : 
   invalid distance method
           A         B         C         D
 B 1.0000000                              
@@ -455,7 +454,7 @@ E 0.3562808 1 0.5844973 0.6036897 0.0000000
 
 Testing R_mutual_dist
 
-Error in stats:::dist(x, method = gsub("R_|_dist", "", f)) : 
+Error in stats::dist(x, method = gsub("R_|_dist", "", f)) : 
   invalid distance method
   A B C D
 B 0      
@@ -552,3 +551,6 @@ E 0.9026897 0.0000000 0.6848730 0.7514756 1.0000000
 > 
 > ###
 > 
+> proc.time()
+   user  system elapsed 
+  0.368   0.056   0.416 

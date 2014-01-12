@@ -8,7 +8,7 @@
 // note: the runtime in the symmetric case is
 //       not always optimal.
 //
-// ceeboo 2007, 2008, 2009
+// ceeboo 2007, 2008, 2009, 2014
 
 #define both_non_NA(a,b) (!ISNAN(a) && !ISNAN(b))
 #define both_FINITE(a,b) (R_FINITE(a) && R_FINITE(b))
@@ -19,7 +19,6 @@ static double dfp = 1;
 
 static double minkowski(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dev, dist;
     int count, j;
 
@@ -43,7 +42,6 @@ static double minkowski(double *x, double *y, int nx, int ny, int nc)
 
 static double euclidean(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dev, dist;
     int count, j;
 
@@ -67,7 +65,6 @@ static double euclidean(double *x, double *y, int nx, int ny, int nc)
 
 static double maximum(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dev, dist;
     int count, j;
 
@@ -92,7 +89,6 @@ static double maximum(double *x, double *y, int nx, int ny, int nc)
 
 static double manhattan(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dev, dist;
     int count, j;
 
@@ -118,7 +114,6 @@ static double manhattan(double *x, double *y, int nx, int ny, int nc)
 
 static double canberra(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dev, dist, sum, diff;
     int count, j;
 
@@ -149,7 +144,6 @@ static double canberra(double *x, double *y, int nx, int ny, int nc)
 // FIXME why treat not both finite as NA?
 static double binary(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     int total, count, dist;
     int j;
 
@@ -173,7 +167,6 @@ static double binary(double *x, double *y, int nx, int ny, int nc)
 
 static double matching(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     int total, count;
     int j;
 
@@ -194,7 +187,6 @@ static double matching(double *x, double *y, int nx, int ny, int nc)
 
 static double fuzzy(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dist, smax, smin;
     int count, j;
 
@@ -224,7 +216,6 @@ static double fuzzy(double *x, double *y, int nx, int ny, int nc)
 
 static double mutual(double *x, double *y, int nx, int ny, int nc)
 {
-    if (x == y) return 0;
     double dist;
     int total, count, cx, cy, j;
 

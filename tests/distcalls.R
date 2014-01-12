@@ -4,6 +4,8 @@
 
 library(proxy)
 
+set.seed(20140107)
+
 ## get all measures
 proxies = pr_DB$get_entry_names()
 

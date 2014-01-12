@@ -31,7 +31,7 @@ for (i in 1:9) {
 ## again but via user interfaces
 
 r <- .Call("R_minkowski_dist", x, NULL, FALSE, NULL)
-all.equal(c(r), c(stats:::dist(x, method = "minkowski", p = 1)))
+all.equal(c(r), c(stats::dist(x, method = "minkowski", p = 1)))
 r
 .Call("R_minkowski_dist", x, x, FALSE, NULL)
 .Call("R_minkowski_dist", x, y, FALSE, NULL)
@@ -42,7 +42,7 @@ dfun <- paste("R",c("euclidean", "maximum", "manhattan", "canberra", "binary", "
 for (f in dfun) {
     cat("\nTesting ",f,"\n\n",sep="")
     r <- do.call(".Call", list(f, x, NULL, FALSE))
-    s <- try(stats:::dist(x, method = gsub("R_|_dist", "", f)))
+    s <- try(stats::dist(x, method = gsub("R_|_dist", "", f)))
     if (!inherits(s, "try-error"))
         print(all.equal(c(r), c(s)))
     print(r)

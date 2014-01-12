@@ -1,5 +1,21 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-11}{
+  \itemize{
+    \item Make binary similarities work with binary data in case of
+    list data (by coercing list to a matrix).
+  }
+}
+\section{Changes in version 0.4-10}{
+  \itemize{
+    \item Bug in Fager/McGown measure fixed.
+  }
+}
+\section{Changes in version 0.4-9}{
+  \itemize{
+    \item Author/Maintainer removed.
+  }
+}
 \section{Changes in version 0.4-8}{
   \itemize{
     \item PACKAGE="proxy" argument added to all

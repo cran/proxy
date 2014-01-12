@@ -1,6 +1,9 @@
 #include <R.h>
 #include <Rdefines.h>
 
+// arrayIndex.c
+SEXP int_arraySubscript(int, SEXP, const char *, const char *, SEXP, Rboolean, SEXP);
+
 // subset a dist object. in order to preserve symmetry
 // we allow only one subset index.
 //
@@ -35,8 +38,12 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	SET_VECTOR_ELT(t, 0, d);
     }
 
+#ifdef _COMPAT_
     PROTECT(s = arraySubscript(0, s, GET_DIM(r), getAttrib, (STRING_ELT), r));
-    
+#else
+    PROTECT(s = int_arraySubscript(0, s, "dim", "dimnames", r,
+						TRUE, R_NilValue));
+#endif
     ns = LENGTH(s);
     
     for (k = 0; k < ns; k++)

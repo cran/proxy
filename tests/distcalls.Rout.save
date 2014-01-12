@@ -24,10 +24,12 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
-The following object(s) are masked from 'package:stats':
+The following objects are masked from 'package:stats':
 
     as.dist, dist
 
+> 
+> set.seed(20140107)
 > 
 > ## get all measures
 > proxies = pr_DB$get_entry_names()
@@ -116,7 +118,7 @@ p = Inf: OK.
 > 
 > ## Stiles (gives a lot of warnings due to log)
 > tmp = dist(x, "Stiles")
-There were 25 warnings (use warnings() to see them)
+There were 27 warnings (use warnings() to see them)
 > tmp = dist(x, x, "Stiles")
 There were 50 or more warnings (use warnings() to see the first 50)
 > 

@@ -104,6 +104,8 @@ function(x, y = NULL, method = NULL, ...,
             ## transpose data for column-wise loop
             if (!by_rows && !is.list(x))
                 x <- t(x)
+            if (is.list(x) && !is.null(reg_entry) && reg_entry$abcd)
+                x <- do.call("rbind", x)
             if (is.matrix(x) && !is.null(reg_entry) && reg_entry$abcd)
                 ## binary matrix
                 .proxy_external(R_apply_dist_binary_matrix, x != 0, NULL)
@@ -122,6 +124,11 @@ function(x, y = NULL, method = NULL, ...,
             if (!by_rows && !is.list(x)) {
                 x <- t(x)
                 y <- t(y)
+            }
+            if (is.list(x) && !is.null(reg_entry) && reg_entry$abcd)
+            {
+                x <- do.call("rbind", x)
+                y <- do.call("rbind", x)
             }
             if (is.matrix(x) && !is.null(reg_entry) && reg_entry$abcd)
                 ## binary matrices
@@ -248,7 +255,10 @@ function(x, FUN = NULL)
         if (!is.null(FUN))
             FUN(x)
         else {
-            reg_entry <- pr_DB$get_entry(attr(x, "method"), stop_if_missing = FALSE)
+            reg_entry <- NULL
+            if (!is.null(attr(x, "method")))
+                reg_entry <- pr_DB$get_entry(attr(x, "method"),
+                                             stop_if_missing = FALSE)
             if (!is.null(reg_entry) && !is.null(reg_entry$convert))
                 do.call(reg_entry$convert, list(x))
             else
@@ -269,7 +279,10 @@ function(x, FUN = NULL)
         if (!is.null(FUN))
             FUN(x)
         else {
-            reg_entry <- pr_DB$get_entry(attr(x, "method"), stop_if_missing = FALSE)
+            reg_entry <- NULL
+            if (!is.null(attr(x, "method")))
+                reg_entry <- pr_DB$get_entry(attr(x, "method"),
+                                             stop_if_missing = FALSE)
             if (!is.null(reg_entry) && !is.null(reg_entry$convert))
                 do.call(reg_entry$convert, list(x))
             else
@@ -285,9 +298,26 @@ function(x, FUN = NULL)
 ## user-defined transformation the values of
 ## s(x,x) are not defined.
 
+## we need to copy stats::as.matrix.dist() since the use of ::: is deprecated:
+
+as_matrix_dist <-
+function (x, ...)
+{
+    size <- attr(x, "Size")
+    df <- matrix(0, size, size)
+    df[row(df) > col(df)] <- x
+    df <- df + t(df)
+    labels <- attr(x, "Labels")
+    dimnames(df) <- if (is.null(labels))
+        list(seq_len(size), seq_len(size))
+    else list(labels, labels)
+    df
+}
+
+
 as.matrix.simil <-
 function(x, diag = NA, ...) {
-    x <- stats:::as.matrix.dist(x)
+    x <- as_matrix_dist(x)
     diag(x) <- diag
     x
 }
@@ -297,7 +327,7 @@ function(x, diag = NA, ...) {
 
 as.matrix.dist <-
 function(x, diag = 0, ...) {
-    x <- stats:::as.matrix.dist(x)
+    x <- as_matrix_dist(x)
     diag(x) <- diag
     x
 }

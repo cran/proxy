@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 
 Attaching package: 'proxy'
 
-The following object(s) are masked from 'package:stats':
+The following objects are masked from 'package:stats':
 
     as.dist, dist
 
