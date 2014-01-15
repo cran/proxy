@@ -1,4 +1,4 @@
-dfc27756349949b9792283cc90d8215c *DESCRIPTION
+b27cc567c5df3ec8da7992e93cc11624 *DESCRIPTION
 0cef4f764b80a4f86d74e3fea9cdbb40 *NAMESPACE
 efa5c729c0744f2fdb2a9f970f982ef7 *R/database.R
 8745d21b116c32dee589b278fe26bf5e *R/dissimilarities.R
@@ -16,10 +16,10 @@ ec24a75149c7ad35c68b86f731dd0d7b *inst/doc/overview.Rnw
 98e7361c7e5616ae525617e7e2b4f6f7 *man/dist.Rd
 e00843cd697a1c925beea8be1463d54a *man/registry.Rd
 d9e34eea7ac668a0dc3798ec3e476e9f *man/rowSums.dist.Rd
-cdcaa1622f904d0a49c01728a3bb7da2 *src/apply.c
-9811937ba72592910a0804f6aaf565ad *src/arrayIndex.c
-1af023f65b2745e265c8d949efd85710 *src/distance.c
-6e1db27385d76fd05f06758349d64fcb *src/util.c
+d6ca98351ad5832eaef85dc3bec14ab9 *src/apply.c
+b4a706d255fa2aeb729a733b122586af *src/arrayIndex.c
+5b55998c1bf91243c66a043f3e18c941 *src/distance.c
+2e8bb333920edd3a2a069f929fc791d3 *src/util.c
 b28a5eb9ef62265175280dacc8303ab0 *tests/apply.R
 486c016ef9c376d8942349d8f5d2d1a9 *tests/apply.Rout.save
 779a686f4d7dc8696501aaac58cf2817 *tests/distance.R

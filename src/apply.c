@@ -108,7 +108,7 @@ SEXP R_apply_dist_matrix(SEXP p) {
 	    i  = j;
 	    nz = j+1;
 	}
-        for (i = i; i < nz; i++) {
+        for (; i < nz; i++) {
             for (k = 0; k < n; k++)
                 REAL(tx)[k] = REAL(x)[i+k*nx];
             SEXP s = eval(c, R_GlobalEnv);
@@ -217,7 +217,7 @@ SEXP R_apply_dist_list(SEXP p) {
 	    i  = j;
 	    nz = j+1;
 	}
-        for (i = i; i < nz; i++) {
+        for (; i < nz; i++) {
             SETCAR(tx, VECTOR_ELT(x, i));
             SEXP s = eval(c, R_GlobalEnv);
             if (LENGTH(s) != 1)
@@ -332,7 +332,7 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 	    i  = j;
 	    nz = j+1;
 	}
-        for (i = i; i < nz; i++) {
+        for (; i < nz; i++) {
             INTEGER(ta)[0] = INTEGER(tb)[0] = INTEGER(tc)[0] = INTEGER(tn)[0] = 
 0;
             for (k = 0; k < n; k++) {
@@ -513,7 +513,7 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 	    i  = j;
 	    nz = j+1;
 	}
-        for (i = i; i < nz; i++) {
+        for (; i < nz; i++) {
 	    for (k = 0; k < nc; k++)
 		setElement(VECTOR_ELT(tx, k), i, VECTOR_ELT(x, k));
 	    INTEGER(rx)[0] = i+1;

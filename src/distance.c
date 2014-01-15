@@ -509,7 +509,7 @@ SEXP R_bjaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
 		nz = j + 1;
 	    }
 	}
-	for (i = i; i < nz; i++) {
+	for (; i < nz; i++) {
 	    l = 0;
 	    for (k = 0; k < nc; k++) {
 		if (x[i+k*nx] == NA_LOGICAL || 
@@ -649,7 +649,7 @@ SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
 		nz = j + 1;
 	    }
 	}
-	for (i = i; i < nz; i++) {
+	for (; i < nz; i++) {
 	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
 		REAL(r)[n++] = NA_REAL;
 		continue;
@@ -800,7 +800,7 @@ SEXP R_cosine(SEXP R_x, SEXP R_y, SEXP R_d) {
 		nz = j + 1;
 	    }
 	}
-	for (i = i; i < nz; i++) {
+	for (; i < nz; i++) {
 	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
 		REAL(r)[n++] = NA_REAL;
 		continue;

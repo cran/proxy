@@ -2,7 +2,7 @@
 #include <Rdefines.h>
 
 // arrayIndex.c
-SEXP int_arraySubscript(int, SEXP, const char *, const char *, SEXP, Rboolean, SEXP);
+extern SEXP _int_array_subscript(int, SEXP, const char *, const char *, SEXP, Rboolean, SEXP);
 
 // subset a dist object. in order to preserve symmetry
 // we allow only one subset index.
@@ -26,14 +26,17 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
     if (TYPEOF(x) != REALSXP) 
 	PROTECT(x = coerceVector(R_x, REALSXP));
 
-    PROTECT(r = allocArray(INTSXP, ScalarInteger(nx)));
-    for (k = 0; k < nx; k++)
-	INTEGER(r)[k] = k+1;
-    
+    PROTECT(r = allocArray(INTSXP, ScalarInteger(0)));
+    INTEGER(getAttrib(r, R_DimSymbol))[0] = nx;
+
     d = getAttrib(x, install("Labels"));
     if (!isNull(d)) {
 	SEXP t;
-	
+
+	if (TYPEOF(d) != STRSXP)
+	    error("'Labels' not of type character");
+	if (LENGTH(d) != nx)
+	    error("'Labels' invalid length");
 	setAttrib(r, R_DimNamesSymbol, (t = allocVector(VECSXP, 1)));
 	SET_VECTOR_ELT(t, 0, d);
     }
@@ -41,8 +44,8 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 #ifdef _COMPAT_
     PROTECT(s = arraySubscript(0, s, GET_DIM(r), getAttrib, (STRING_ELT), r));
 #else
-    PROTECT(s = int_arraySubscript(0, s, "dim", "dimnames", r,
-						TRUE, R_NilValue));
+    PROTECT(s = _int_array_subscript(0, s, "dim", "dimnames", r,
+						  TRUE, R_NilValue));
 #endif
     ns = LENGTH(s);
     
