@@ -92,7 +92,7 @@ pr_supremum_prefun <- function(x, y, pairwise, p, reg_entry) {
          p = p, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_maximum_dist",
-                names = c("supremum", "max", "Tschebyscheff", "Chebyshev"),
+                names = c("supremum", "max", "maximum", "Tschebyscheff", "Chebyshev"),
                 distance = TRUE,
                 PREFUN = "pr_supremum_prefun",
                 convert = "pr_dist2simil",
@@ -229,7 +229,10 @@ pr_DB$set_entry(FUN = "pr_Soergel",
                 description = "The Soergel Distance")
 
 pr_Levenshtein_prefun <- function(x, y, pairwise, p, reg_entry) {
-    if (!require("cba")) stop("Need package cba!")
+    if (system.file(package="cba") == "")
+        stop("Need package 'cba'!")
+    else
+        loadNamespace("cba")
     if (pairwise)
         stop("Pairwise distances not implemented by sdist()!")
     list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
@@ -242,6 +245,7 @@ pr_DB$set_entry(FUN = "sdists",
                 loop = FALSE,
                 abcd = FALSE,
                 C_FUN = FALSE,
+                PACKAGE = "cba",
                 formula = "Number of insertions, edits, and deletions between to strings",
                 reference = "Levenshtein V.I. (1966). Binary codes capable of correcting deletions, insertions, and reversals. Soviet Physics Doklady 10, pp. 707--710",
                 description = "Wrapper for sdists() in the cba-package (C implementation).")

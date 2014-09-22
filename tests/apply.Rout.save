@@ -1,8 +1,7 @@
 
-R version 2.14.1 Patched (2012-01-12 r58095)
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i486-pc-linux-gnu (32-bit)
+R Under development (unstable) (2014-01-26 r64890) -- "Unsuffered Consequences"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -258,14 +257,14 @@ e    5                  D
 f    6                  E
 > 
 > all.equal(x, y)
-[1] "Names: 2 string mismatches"                                          
-[2] "Attributes: < Component 2: Modes: numeric, character >"              
-[3] "Attributes: < Component 2: Lengths: 5, 6 >"                          
-[4] "Attributes: < Component 2: target is numeric, current is character >"
-[5] "Component 1: Numeric: lengths (5, 6) differ"                         
-[6] "Component 2: Lengths: 5, 6"                                          
-[7] "Component 2: Lengths (5, 6) differ (string compare on first 5)"      
-[8] "Component 2: 4 string mismatches"                                    
+[1] "Names: 2 string mismatches"                                                      
+[2] "Attributes: < Component \"row.names\": Modes: numeric, character >"              
+[3] "Attributes: < Component \"row.names\": Lengths: 5, 6 >"                          
+[4] "Attributes: < Component \"row.names\": target is numeric, current is character >"
+[5] "Component 1: Numeric: lengths (5, 6) differ"                                     
+[6] "Component 2: Lengths: 5, 6"                                                      
+[7] "Component 2: Lengths (5, 6) differ (string compare on first 5)"                  
+[8] "Component 2: 4 string mismatches"                                                
 > identical(attributes(x[[1]]), attributes(y[[1]]))
 [1] TRUE
 > identical(attributes(x[[2]]), attributes(y[[2]]))
@@ -328,3 +327,6 @@ f    6                  E
 > 
 > ###
 > 
+> proc.time()
+   user  system elapsed 
+  0.516   0.020   0.532 

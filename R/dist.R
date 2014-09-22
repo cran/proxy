@@ -97,8 +97,12 @@ function(x, y = NULL, method = NULL, ...,
             if (reg_entry$C_FUN)
                 do.call(".Call", c(list(method), list(x), list(y), pairwise, params,
                                    list(PACKAGE = reg_entry$PACKAGE)))
-            else    ## user functions need not implement pairwise
-                do.call(method, c(list(x), list(y), params))
+            else {   ## user functions need not implement pairwise
+                if (!is.null(reg_entry$PACKAGE))
+                    do.call(method, c(list(x), list(y), params), envir = asNamespace(reg_entry$PACKAGE))
+                else
+                    do.call(method, c(list(x), list(y), params))
+            }
         } else if (is.null(y)) {
 ### LOOP WORKHORSE for auto-proximities
             ## transpose data for column-wise loop
@@ -184,7 +188,12 @@ function(x, y = NULL, method = NULL, ...,
         else
             structure(result, class = "pairdist")
     structure(result,
-              method = if (is.character(method)) method else deparse(substitute(method)),
+              method = if (is.character(method))
+                            method
+                       else
+                          if (missing(method))
+                               deparse(substitute(y))
+                          else deparse(substitute(method)),
               call = match.call())
 }
 
