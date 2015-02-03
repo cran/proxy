@@ -1,8 +1,7 @@
 
-R version 2.14.1 Patched (2012-01-12 r58095)
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i486-pc-linux-gnu (32-bit)
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -28,6 +27,10 @@ The following objects are masked from 'package:stats':
 
     as.dist, dist
 
+The following object is masked from 'package:base':
+
+    as.matrix
+
 > 
 > set.seed(20140107)
 > 
@@ -35,7 +38,7 @@ The following objects are masked from 'package:stats':
 > proxies = pr_DB$get_entry_names()
 > 
 > ## remove special cases
-> proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles", "Levenshtein"))
+> proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles", "Levenshtein", "fJaccard"))
 > 
 > ## create test data
 > x = matrix(1:100, 10)
@@ -72,7 +75,6 @@ Simpson: OK.
 Braun-Blanquet: OK.
 cosine: OK.
 eJaccard: OK.
-fJaccard: OK.
 correlation: OK.
 Chi-squared: OK.
 Phi-squared: OK.
@@ -113,6 +115,11 @@ p = Inf: OK.
 > prtest("Mahalanobis")
 [1] TRUE
 > 
+> ## fJaccard (needs values in unit interval)
+> x = as.matrix(1:100/100, 10)
+> prtest("fJaccard")
+[1] TRUE
+> 
 > ## produce binary matrix
 > x = matrix(rbinom(100,1,0.7), 10)
 > 
@@ -147,7 +154,6 @@ Simpson: OK.
 Braun-Blanquet: OK.
 cosine: OK.
 eJaccard: OK.
-fJaccard: OK.
 correlation: OK.
 Chi-squared: OK.
 Phi-squared: OK.
@@ -182,8 +188,6 @@ p = Inf: OK.
 > ## Levenshtein distance
 > s <- c("A", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog")
 > all(as.matrix(dist(s, "Levenshtein")) == dist(s, s, "Levenshtein"))
-Loading required package: cba
-Loading required package: grid
 [1] TRUE
 > 
 > ## Test auto-conversion
@@ -193,3 +197,6 @@ Loading required package: grid
 > 
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  1.658   0.010   1.660 

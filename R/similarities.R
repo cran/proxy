@@ -343,36 +343,6 @@ Value-based customer grouping from large retail data-sets.
 In Proc. SPIE Conference on Data Mining and Knowledge Discovery, Orlando, volume 4057, pages 33-42. SPIE.",
                 description = "The extended Jaccard Similarity (C implementation; yields Jaccard for binary x,y).")
 
-pr_fJaccard <- function(x, y) sum(pmin(x, y)) / sum(pmax(x, y))
-pr_fJaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
-    if (any(x < 0 || x > 1))
-        stop("Valid range for fuzzy measure: 0 <= x <= 1")
-    if (!is.null(y) && any(y < 0 || y > 1))
-        stop("Valid range for fuzzy measure: 0 <= y <= 1")
-
-    if (!is.matrix(x)) {
-        reg_entry$C_FUN <- FALSE
-        reg_entry$loop <- TRUE
-        reg_entry$FUN <- "pr_fJaccard"
-    }
-    list(x = 0 + x,
-         y = if (!is.null(y)) 0 + y else NULL,
-         pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
-}
-pr_DB$set_entry(FUN = "R_fuzzy_dist",
-                names = c("fJaccard", "fuzzy_Jaccard"),
-                PREFUN = "pr_fJaccard_prefun",
-                distance = FALSE,
-                convert = "pr_simil2dist",
-                type = "metric",
-                loop = FALSE,
-                C_FUN = TRUE,
-                abcd = FALSE,
-                formula = "sum_i (min{x_i, y_i} / max{x_i, y_i})",
-                reference = "Miyamoto S. (1990). Fuzzy sets in information retrieval and cluster analysis, Kluwer Academic Publishers, Dordrecht.",
-                description = "The fuzzy Jaccard Similarity (C implementation).")
-
 pr_cor <- function(x, y) {
     X <- x - mean(x)
     Y <- y - mean(y)

@@ -10,7 +10,7 @@ set.seed(20140107)
 proxies = pr_DB$get_entry_names()
 
 ## remove special cases
-proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles", "Levenshtein"))
+proxies = setdiff(proxies, c("Mahalanobis", "Minkowski", "Stiles", "Levenshtein", "fJaccard"))
 
 ## create test data
 x = matrix(1:100, 10)
@@ -35,6 +35,10 @@ for (j in c(0, 0.5, 1, 2, 3, Inf))
 ## Mahalanobis (need non-singular matrix)
 x = as.matrix(iris[1:50,-5])
 prtest("Mahalanobis")
+
+## fJaccard (needs values in unit interval)
+x = as.matrix(1:100/100, 10)
+prtest("fJaccard")
 
 ## produce binary matrix
 x = matrix(rbinom(100,1,0.7), 10)

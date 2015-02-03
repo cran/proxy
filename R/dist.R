@@ -309,6 +309,10 @@ function(x, FUN = NULL)
 
 ## we need to copy stats::as.matrix.dist() since the use of ::: is deprecated:
 
+as.matrix <-
+function(x, ...)
+    base::as.matrix(x, ...)
+
 as_matrix_dist <-
 function (x, ...)
 {

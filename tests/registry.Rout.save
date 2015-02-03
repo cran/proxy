@@ -1,8 +1,7 @@
 
-R version 2.14.1 Patched (2012-01-12 r58095)
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i486-pc-linux-gnu (32-bit)
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -26,6 +25,10 @@ Attaching package: 'proxy'
 The following objects are masked from 'package:stats':
 
     as.dist, dist
+
+The following object is masked from 'package:base':
+
+    as.matrix
 
 > 
 > .my_check_fun <- function(x) if (x$Z == 999 && x$New2 == 999) stop("No evil allowed!")
@@ -150,3 +153,6 @@ test6  TRUE <NA>   123 <NA>   NA    A
 > TRY(R$modify_entry("X", "Bla", 123))
 > TRY(R$modify_entry("test","X",TRUE))
 > 
+> proc.time()
+   user  system elapsed 
+  0.226   0.011   0.230 

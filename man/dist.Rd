@@ -9,6 +9,7 @@
 \alias{as.matrix.simil}
 \alias{pr_simil2dist}
 \alias{pr_dist2simil}
+\alias{as.matrix}
 \alias{as.dist}
 \alias{as.simil}
 \alias{row.dist}

@@ -1,6 +1,6 @@
 import("stats")
 export("dist", "simil",
-       "as.dist", "as.simil",
+       "as.dist", "as.simil", "as.matrix",
        "pr_simil2dist", "pr_dist2simil",
        "row.dist", "col.dist",
        "rowSums.dist", "colSums.dist", "rowMeans.dist", "colMeans.dist",

@@ -331,3 +331,34 @@ pr_DB$set_entry(FUN = pr_hellinger,
                 reference = "Rao, C.R. (1995) Use of Hellinger distance in graphical displays. In E.-M. Tiit, T. Kollo, & H. Niemi (Ed.): Multivariate statistics and matrices in statistics. Leiden (Netherland): Brill Academic Publisher. pp. 143--161.",
                 description = "The Hellinger distance.")
 
+
+pr_fJaccard <- function(x, y) sum(pmin(x, y)) / sum(pmax(x, y))
+pr_fJaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
+    if (any(x < 0 | x > 1))
+        stop("Valid range for fuzzy measure: 0 <= x <= 1")
+    if (!is.null(y) && any(y < 0 | y > 1))
+        stop("Valid range for fuzzy measure: 0 <= y <= 1")
+
+    if (!is.matrix(x)) {
+        reg_entry$C_FUN <- FALSE
+        reg_entry$loop <- TRUE
+        reg_entry$FUN <- "pr_fJaccard"
+    }
+    list(x = 0 + x,
+         y = if (!is.null(y)) 0 + y else NULL,
+         pairwise = pairwise,
+         p = p, reg_entry = reg_entry)
+}
+pr_DB$set_entry(FUN = "R_fuzzy_dist",
+                names = c("fJaccard", "fuzzy_Jaccard"),
+                PREFUN = "pr_fJaccard_prefun",
+                distance = TRUE,
+                convert = "pr_dist2simil",
+                type = "metric",
+                loop = FALSE,
+                C_FUN = TRUE,
+                abcd = FALSE,
+                formula = "sum_i (min{x_i, y_i} / max{x_i, y_i})",
+                reference = "Miyamoto S. (1990). Fuzzy sets in information retrieval and cluster analysis, Kluwer Academic Publishers, Dordrecht.",
+                description = "The fuzzy Jaccard dissimilarity (C implementation).")
+
