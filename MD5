@@ -1,5 +1,5 @@
-47adc623a1297d2ffbb188ec9b2b5261 *DESCRIPTION
-9f78c7ee4be797e75ab5b8b92f1d7987 *NAMESPACE
+aee7e7bc143f697fd8d4325ba2cdc045 *DESCRIPTION
+58ce320cf47c6679799f10da3ed74026 *NAMESPACE
 efa5c729c0744f2fdb2a9f970f982ef7 *R/database.R
 6e68aec31e0ebecf6397e219de943def *R/dissimilarities.R
 90a96fe2b31cf3c5510604a8553de403 *R/dist.R
@@ -8,8 +8,8 @@ efa5c729c0744f2fdb2a9f970f982ef7 *R/database.R
 25e594b8c09d01956fa37bfaa1f0ab82 *R/similarities.R
 d12cd704ad89fb6228649d115cd47f0c *R/util.R
 34d2a9328c715649558d9e4803e1137d *TODO
-7bc027bdc58e96f06441b38d9d85811f *build/vignette.rds
-53ed6049ffbc0be210c3fba37fdbfe93 *inst/NEWS.Rd
+c31d7660392af54304595289c6fe2fbe *build/vignette.rds
+f7629d3a86ff4d4b597487d00b3cc305 *inst/NEWS.Rd
 bcc756854674661ee0886c0c7d3b6c18 *inst/doc/overview.R
 ec24a75149c7ad35c68b86f731dd0d7b *inst/doc/overview.Rnw
 662f103038acf285eb94d243b2c19b29 *inst/doc/overview.pdf

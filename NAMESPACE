@@ -1,4 +1,6 @@
 import("stats")
+importFrom("utils", "formatUL")
+
 export("dist", "simil",
        "as.dist", "as.simil", "as.matrix",
        "pr_simil2dist", "pr_dist2simil",

@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-15}{
+  \itemize{
+    \item add imports from recommended packages.
+  }
+}
 \section{Changes in version 0.4-14}{
   \itemize{
     \item export as.matrix() generic.
