@@ -110,9 +110,9 @@ function(index_field = "names", entry_class = NULL,
     .entry_exists <-
     function(name)
         if (ignore_case)
-            toupper(name) %in% toupper(sapply(DATA, function(i) i[[index_field]]))
+            toupper(name) %in% toupper(unlist(sapply(DATA, function(i) i[[index_field]])))
         else
-            name %in% sapply(DATA, function(i) i[[index_field]])
+            name %in% unlist(sapply(DATA, function(i) i[[index_field]]))
 
     .get_field <-
     function(name)

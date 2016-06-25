@@ -63,7 +63,7 @@ function(x, y = NULL, method = NULL, ...,
 ### PREPROCESS
     params <- list(...)
     if (!is.null(reg_entry)) {
-        if(!is.na(reg_entry$PREFUN)) {
+        if(is.function(reg_entry$PREFUN) || is.character(reg_entry$PREFUN)) {
             tmp <- do.call(reg_entry$PREFUN,
                            c(list(x, y, pairwise, params, reg_entry)))
             if (!is.null(tmp)) {
@@ -163,7 +163,7 @@ function(x, y = NULL, method = NULL, ...,
 
 ### POSTPROCESS
     if (!is.null(reg_entry)) {
-        if (!is.na(reg_entry$POSTFUN))
+        if (is.function(reg_entry$POSTFUN) || is.character(reg_entry$POSTFUN))
             result <- do.call(reg_entry$POSTFUN, c(list(result, params)))
         if (!reg_entry$distance &&
             !(is.logical(convert_similarities) && !convert_similarities)) {

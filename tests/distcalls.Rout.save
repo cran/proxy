@@ -1,7 +1,7 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.3.0 (2016-05-03) -- "Supposedly Educational"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -75,6 +75,7 @@ Simpson: OK.
 Braun-Blanquet: OK.
 cosine: OK.
 eJaccard: OK.
+eDice: OK.
 correlation: OK.
 Chi-squared: OK.
 Phi-squared: OK.
@@ -154,6 +155,7 @@ Simpson: OK.
 Braun-Blanquet: OK.
 cosine: OK.
 eJaccard: OK.
+eDice: OK.
 correlation: OK.
 Chi-squared: OK.
 Phi-squared: OK.
@@ -199,4 +201,4 @@ p = Inf: OK.
 > 
 > proc.time()
    user  system elapsed 
-  1.658   0.010   1.660 
+  1.960   0.020   1.974 

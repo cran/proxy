@@ -8,7 +8,7 @@
 // note: the runtime in the symmetric case is
 //       not always optimal.
 //
-// ceeboo 2007, 2008, 2009, 2014
+// ceeboo 2007, 2008, 2009, 2014, 2016
 
 #define both_non_NA(a,b) (!ISNAN(a) && !ISNAN(b))
 #define both_FINITE(a,b) (R_FINITE(a) && R_FINITE(b))
@@ -664,6 +664,158 @@ SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
 	    }
 	    if (l > 0) {
 	        z = z / (t + s[i] - z);
+	        if (ISNAN(z))
+		    REAL(r)[n++] = 1;	    /* be compatible */
+		else
+		    REAL(r)[n++] = z;
+	    }
+	    else
+		REAL(r)[n++] = NA_REAL;
+	}
+	R_CheckUserInterrupt();
+    }
+
+    UNPROTECT(2);
+    if (R_x != r_x)
+	UNPROTECT(1);
+    if (!isNull(r_y) && r_y != r_x && R_y != r_y)
+	UNPROTECT(1);
+
+    return r;
+}
+
+/* calculate Dice similarities extended to real-
+ * valued data, i.e. twice the scalar product divided by the
+ * squared Euclidean distance plus twice the scalar product.
+ */
+
+SEXP R_edice(SEXP R_x, SEXP R_y, SEXP R_d) {
+    if (!isMatrix(R_x))
+	error("'x' not of class matrix");
+    if (!isNull(R_y) && !isMatrix(R_x))
+	error("'y' not of class matrix");
+    if (TYPEOF(R_d) != LGLSXP)
+	error("'d' not of type logical");
+    int nc, nx, ny, nz; 
+    int i, j, k, l, n, m = 0;
+    double t, z;
+    double *x, *y, *s;
+    SEXP r_x = R_x, r_y = R_y, r;
+    
+    if (isNull(R_y))
+	R_y = R_x;
+    else
+    if (LOGICAL(R_d)[0] == TRUE)
+	m = 2;
+    else
+	m = 1;
+		    
+    nc = INTEGER(GET_DIM(R_x))[1];
+
+    if (INTEGER(GET_DIM(R_y))[1] != nc)
+	error("the number of columns of 'x' and 'y' do not conform");
+
+    nz =
+    nx = INTEGER(GET_DIM(R_x))[0];
+    ny = INTEGER(GET_DIM(R_y))[0];
+
+    if (m == 2 && nx != ny)
+	error("the number f rows of 'x' and 'y' do not conform");
+
+    if (TYPEOF(R_x) != REALSXP) {
+	PROTECT(R_x = coerceVector(r_x, REALSXP));
+
+	if (isNull(r_y) || r_x == r_y)
+	    R_y = R_x;
+    }
+
+    if (TYPEOF(R_y) != REALSXP) 
+	PROTECT(R_y = coerceVector(r_y, REALSXP));
+
+    if (m == 0) {
+	SEXP d;
+	
+	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
+	setAttrib(r, install("Size"), ScalarInteger(nx));
+	
+	if (!isNull(d = getAttrib(R_x, R_DimNamesSymbol)))
+	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
+	// fixme: package?
+	setAttrib(r, R_ClassSymbol, mkString("dist"));
+    } else
+    if (m == 1) {
+	SEXP d1, d2;
+	
+	PROTECT(r = allocMatrix(REALSXP, nx, ny));
+
+	d1 = getAttrib(R_x, R_DimNamesSymbol);
+	d2 = getAttrib(R_y, R_DimNamesSymbol);
+	if (!isNull(d1) || !isNull(d2)) {
+	    SEXP d;
+	    
+	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
+	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
+	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
+	}
+    } else 
+	PROTECT(r = allocVector(REALSXP, nx));
+
+    x = REAL(R_x);
+    y = REAL(R_y);
+	
+    s = REAL(PROTECT(allocVector(REALSXP, nx)));
+    memset(s, 0, sizeof(double)*nx);
+    
+    for (i = 0; i < nx; i++) {
+	z = 0;
+	l = 0;
+	for (k = 0; k < nc; k++) {
+	    if (!R_FINITE(x[i+k*nx]))
+		continue;
+	    l++;
+	    z+= pow(x[i+k*nx], 2);
+	}
+	s[i] = (l > 0) ? z : NA_REAL;
+    }
+
+    n = 0; 
+    for (j = 0; j < ny; j++) {
+	if (m == 0) {
+	    t = s[j];
+	    i = j + 1;
+	}
+	else {
+	    z = 0;
+	    l = 0;
+	    for (k = 0; k < nc; k++) {
+		if (!R_FINITE(y[j+k*ny]))
+		    continue;
+		l++;
+		z+= pow(y[j+k*ny], 2);
+	    }
+	    t = (l > 0) ? z : NA_REAL;
+	    if (m == 1)
+		i = 0;
+	    else {
+		i  = j;
+		nz = j + 1;
+	    }
+	}
+	for (; i < nz; i++) {
+	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
+		REAL(r)[n++] = NA_REAL;
+		continue;
+	    }
+	    l = 0;
+	    z = 0;
+	    for (k = 0; k < nc; k++) {
+	        if (!R_FINITE(x[i+k*nx]) || !R_FINITE(y[j+k*ny]))
+		    continue;
+		l++;
+		z+= x[i+k*nx] * y[j+k*ny];
+	    }
+	    if (l > 0) {
+	        z = 2 * z / (t + s[i]);
 	        if (ISNAN(z))
 		    REAL(r)[n++] = 1;	    /* be compatible */
 		else

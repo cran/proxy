@@ -343,6 +343,35 @@ Value-based customer grouping from large retail data-sets.
 In Proc. SPIE Conference on Data Mining and Knowledge Discovery, Orlando, volume 4057, pages 33-42. SPIE.",
                 description = "The extended Jaccard Similarity (C implementation; yields Jaccard for binary x,y).")
 
+pr_eDice <- function(x, y) {
+    tmp <- crossprod(x, y)
+    tmp / (crossprod(x) + crossprod(y))
+}
+pr_eDice_prefun <- function(x, y, pairwise, p, reg_entry) {
+    if (!is.matrix(x)) {
+        reg_entry$C_FUN <- FALSE
+        reg_entry$loop <- TRUE
+        reg_entry$FUN <- "pr_eDice"
+    }
+    list(x = 0 + x,
+         y = if (!is.null(y)) 0 + y else NULL,
+         pairwise = pairwise,
+         p = p, reg_entry = reg_entry)
+}
+pr_DB$set_entry(FUN = "R_edice",
+                names = c("eDice", "extended_Dice","eSorensen"),
+                PREFUN = "pr_eDice_prefun",
+                distance = FALSE,
+                convert = "pr_simil2dist",
+                type = "metric",
+                loop = FALSE,
+                C_FUN = TRUE,
+                abcd = FALSE,
+                formula = "2xy / (xx + yy)",
+		## FIXME
+                reference = "Alexander Strehl. Relationship-based Clustering and Cluster Ensembles for High-dimensional Data Mining. PhD thesis, The University of Texas at Austin, May 2002.",
+                description = "The extended Dice Similarity (C implementation; yields Dice for binary x,y).")
+
 pr_cor <- function(x, y) {
     X <- x - mean(x)
     Y <- y - mean(y)
