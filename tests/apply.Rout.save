@@ -54,55 +54,55 @@ The following object is masked from 'package:base':
 [4,] 0.9119128 0.21720445 0.3986998 0.72623146
 [5,] 0.9374529 0.04343485 0.8170873 0.69974714
 > 
-> .External("R_apply_dist_matrix", x, NULL, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, x, NULL, FALSE, f)
           1         2         3         4
 2 0.8175510                              
 3 0.5909955 0.5179092                    
 4 0.8046383 0.7485219 0.8416675          
 5 0.9026897 0.5245741 0.6848730 0.7514756
-> .External("R_apply_dist_matrix", x, x, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, x, x, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 1.0000000 0.8175510 0.5909955 0.8046383 0.9026897
 [2,] 0.8175510 1.0000000 0.5179092 0.7485219 0.5245741
 [3,] 0.5909955 0.5179092 1.0000000 0.8416675 0.6848730
 [4,] 0.8046383 0.7485219 0.8416675 1.0000000 0.7514756
 [5,] 0.9026897 0.5245741 0.6848730 0.7514756 1.0000000
-> .External("R_apply_dist_matrix", x, y, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, x, y, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 0.8068091 0.8869376 0.9573450 0.8394141 0.9257044
 [2,] 0.7091915 0.5310191 0.7490815 0.9743857 0.9583243
 [3,] 0.7471004 0.4955903 0.7898068 0.6896626 0.5971429
 [4,] 0.9837110 0.7703657 0.8896691 0.8665744 0.7655715
 [5,] 0.7512326 0.9126553 0.9466108 0.6140860 0.7184058
-> .External("R_apply_dist_matrix", x, y, TRUE, f)
+> .External(proxy:::R_apply_dist_matrix, x, y, TRUE, f)
 [1] 0.8068091 0.5310191 0.7898068 0.8665744 0.7184058
 > 
 > # coerce
 > 
 > z <- y * 100
 > storage.mode(z) <- "integer"
-> .External("R_apply_dist_matrix", x, z, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, x, z, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 0.8035753 0.8851147 0.9568709 0.8363210 0.9255173
 [2,] 0.7027894 0.5281041 0.7457478 0.9754800 0.9584822
 [3,] 0.7399077 0.4909526 0.7896421 0.6859131 0.5945390
 [4,] 0.9811939 0.7674593 0.8884016 0.8638128 0.7638742
 [5,] 0.7490644 0.9109332 0.9482222 0.6083438 0.7173810
-> .External("R_apply_dist_matrix", z, x, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, z, x, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 0.8035753 0.7027894 0.7399077 0.9811939 0.7490644
 [2,] 0.8851147 0.5281041 0.4909526 0.7674593 0.9109332
 [3,] 0.9568709 0.7457478 0.7896421 0.8884016 0.9482222
 [4,] 0.8363210 0.9754800 0.6859131 0.8638128 0.6083438
 [5,] 0.9255173 0.9584822 0.5945390 0.7638742 0.7173810
-> .External("R_apply_dist_matrix", z, z, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, z, z, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 1.0000000 0.8363694 0.8593771 0.8075186 0.7133480
 [2,] 0.8363694 1.0000000 0.8668551 0.5849013 0.6553123
 [3,] 0.8593771 0.8668551 1.0000000 0.8253313 0.8715788
 [4,] 0.8075186 0.5849013 0.8253313 1.0000000 0.9495662
 [5,] 0.7133480 0.6553123 0.8715788 0.9495662 1.0000000
-> .External("R_apply_dist_matrix", z, NULL, FALSE, f)
+> .External(proxy:::R_apply_dist_matrix, z, NULL, FALSE, f)
           1         2         3         4
 2 0.8363694                              
 3 0.8593771 0.8668551                    
@@ -130,27 +130,27 @@ The following object is masked from 'package:base':
 
 > y <- unlist(apply(y, 1, list), recursive = FALSE)
 > 
-> .External("R_apply_dist_list", x, NULL, FALSE, f)
+> .External(proxy:::R_apply_dist_list, x, NULL, FALSE, f)
           1         2         3         4
 2 0.8175510                              
 3 0.5909955 0.5179092                    
 4 0.8046383 0.7485219 0.8416675          
 5 0.9026897 0.5245741 0.6848730 0.7514756
-> .External("R_apply_dist_list", x, x, FALSE, f)
+> .External(proxy:::R_apply_dist_list, x, x, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 1.0000000 0.8175510 0.5909955 0.8046383 0.9026897
 [2,] 0.8175510 1.0000000 0.5179092 0.7485219 0.5245741
 [3,] 0.5909955 0.5179092 1.0000000 0.8416675 0.6848730
 [4,] 0.8046383 0.7485219 0.8416675 1.0000000 0.7514756
 [5,] 0.9026897 0.5245741 0.6848730 0.7514756 1.0000000
-> .External("R_apply_dist_list", x, y, FALSE, f)
+> .External(proxy:::R_apply_dist_list, x, y, FALSE, f)
           [,1]      [,2]      [,3]      [,4]      [,5]
 [1,] 0.8068091 0.8869376 0.9573450 0.8394141 0.9257044
 [2,] 0.7091915 0.5310191 0.7490815 0.9743857 0.9583243
 [3,] 0.7471004 0.4955903 0.7898068 0.6896626 0.5971429
 [4,] 0.9837110 0.7703657 0.8896691 0.8665744 0.7655715
 [5,] 0.7512326 0.9126553 0.9466108 0.6140860 0.7184058
-> .External("R_apply_dist_list", x, y, TRUE, f)
+> .External(proxy:::R_apply_dist_list, x, y, TRUE, f)
 [1] 0.8068091 0.5310191 0.7898068 0.8665744 0.7184058
 > 
 > ## logical matrix
@@ -168,27 +168,27 @@ The following object is masked from 'package:base':
 [5,] FALSE FALSE  TRUE FALSE
 > y <- t(sapply(y, ">", 0.5))
 > 
-> .External("R_apply_dist_binary_matrix", x, NULL, FALSE, f)
+> .External(proxy:::R_apply_dist_binary_matrix, x, NULL, FALSE, f)
           1         2         3         4
 2 0.0000000                              
 3 0.0000000 0.0000000                    
 4 0.0000000 0.5773503 0.5773503          
 5 1.0000000 0.0000000 0.0000000 0.0000000
-> .External("R_apply_dist_binary_matrix", x, x, FALSE, f)
+> .External(proxy:::R_apply_dist_binary_matrix, x, x, FALSE, f)
      [,1]      [,2]      [,3]      [,4] [,5]
 [1,]    1 0.0000000 0.0000000 0.0000000    1
 [2,]    0 1.0000000 0.0000000 0.5773503    0
 [3,]    0 0.0000000 1.0000000 0.5773503    0
 [4,]    0 0.5773503 0.5773503 1.0000000    0
 [5,]    1 0.0000000 0.0000000 0.0000000    1
-> .External("R_apply_dist_binary_matrix", x, y, FALSE, f)
+> .External(proxy:::R_apply_dist_binary_matrix, x, y, FALSE, f)
      [,1]      [,2]      [,3]      [,4]      [,5]
 [1,]  NaN 0.7071068 0.7071068 0.0000000 0.5773503
 [2,]  NaN 0.0000000 0.0000000 0.7071068 0.5773503
 [3,]  NaN 0.0000000 0.7071068 0.7071068 0.5773503
 [4,]  NaN 0.4082483 0.4082483 0.8164966 0.6666667
 [5,]  NaN 0.7071068 0.7071068 0.0000000 0.5773503
-> .External("R_apply_dist_binary_matrix", x, y, TRUE, f)
+> .External(proxy:::R_apply_dist_binary_matrix, x, y, TRUE, f)
 [1]       NaN 0.0000000 0.7071068 0.8164966 0.5773503
 > 
 > ## data.frame
@@ -207,27 +207,27 @@ The following object is masked from 'package:base':
 > y <- data.frame(unlist(apply(y, 2, list), recursive = FALSE))
 > names(y) <- letters[1:4]
 > 
-> .External("R_apply_dist_data_frame", x, NULL, FALSE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, NULL, FALSE, f)
           1         2         3         4
 2 0.0000000                              
 3 0.0000000 0.0000000                    
 4 0.0000000 0.5773503 0.5773503          
 5 1.0000000 0.0000000 0.0000000 0.0000000
-> .External("R_apply_dist_data_frame", x, x, FALSE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, x, FALSE, f)
   1         2         3         4 5
 1 1 0.0000000 0.0000000 0.0000000 1
 2 0 1.0000000 0.0000000 0.5773503 0
 3 0 0.0000000 1.0000000 0.5773503 0
 4 0 0.5773503 0.5773503 1.0000000 0
 5 1 0.0000000 0.0000000 0.0000000 1
-> .External("R_apply_dist_data_frame", x, y, FALSE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, y, FALSE, f)
     1         2         3         4         5
 1 NaN 0.7071068 0.7071068 0.0000000 0.5773503
 2 NaN 0.0000000 0.0000000 0.7071068 0.5773503
 3 NaN 0.0000000 0.7071068 0.7071068 0.5773503
 4 NaN 0.4082483 0.4082483 0.8164966 0.6666667
 5 NaN 0.7071068 0.7071068 0.0000000 0.5773503
-> .External("R_apply_dist_data_frame", x, y, TRUE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, y, TRUE, f)
 [1]       NaN 0.0000000 0.7071068 0.8164966 0.5773503
 > 
 > #
@@ -274,13 +274,13 @@ f    6                  E
 > identical(attributes(x[[2]]), attributes(y[[2]]))
 [1] TRUE
 > 
-> .External("R_apply_dist_data_frame", x, NULL, FALSE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, NULL, FALSE, f)
   1 2 3 4
 2 0      
 3 0 0    
 4 0 0 0  
 5 0 0 0 0
-> .External("R_apply_dist_data_frame", x, x, FALSE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, x, FALSE, f)
   X1.5 LETTERS.1.5.
 1    1            A
 'data.frame':	1 obs. of  2 variables:
@@ -294,7 +294,7 @@ f    6                  E
 3 0 0 1 0 0
 4 0 0 0 1 0
 5 0 0 0 0 1
-> .External("R_apply_dist_data_frame", x, y, FALSE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, y, FALSE, f)
   X1.5 LETTERS.1.5.
 1    1            A
 'data.frame':	1 obs. of  2 variables:
@@ -308,7 +308,7 @@ f    6                  E
 3 0 0.0 0.5 0.5 0.0 0.0
 4 0 0.0 0.0 0.5 0.5 0.0
 5 0 0.0 0.0 0.0 0.5 0.5
-> .External("R_apply_dist_data_frame", x, y[-6,], TRUE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, y[-6,], TRUE, f)
   X1.5 LETTERS.1.5.
 1    1            A
 'data.frame':	1 obs. of  2 variables:
@@ -324,9 +324,9 @@ f    6                  E
 > f <- function(x, y, p = 1)
 +     sum(x == y) / length(x) * p
 > 
-> .External("R_apply_dist_data_frame", x, y[-6,], TRUE, f)
+> .External(proxy:::R_apply_dist_data_frame, x, y[-6,], TRUE, f)
 [1] 1.0 0.5 0.5 0.5 0.5
-> .External("R_apply_dist_data_frame", x, y[-6,], TRUE, f, p = 2)
+> .External(proxy:::R_apply_dist_data_frame, x, y[-6,], TRUE, f, p = 2)
 [1] 2 1 1 1 1
 > 
 > ###

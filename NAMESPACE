@@ -33,21 +33,4 @@ S3method("print","registry_entry")
 S3method("summary","registry")
 S3method("as.data.frame","registry")
 
-useDynLib("proxy",
-          "R_euclidean_dist",
-          "R_manhattan_dist",
-          "R_maximum_dist",
-          "R_minkowski_dist",
-          "R_bjaccard",
-          "R_cosine",
-          "R_ejaccard",
-          "R_edice",
-          "R_fuzzy_dist",
-          "R_row_dist",
-          "R_subset_dist",
-          "R_rowSums_dist",
-          ## .External
-	  "R_apply_dist_binary_matrix",
-          "R_apply_dist_list",
-          "R_apply_dist_matrix",
-          "R_apply_dist_data_frame")
+useDynLib("proxy", .registration = TRUE)

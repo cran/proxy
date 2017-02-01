@@ -8,7 +8,7 @@ pr_Euclidean_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_euclidean_dist",
                 names = c("Euclidean","L2"),
@@ -64,7 +64,7 @@ pr_Manhattan_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_manhattan_dist",
                 names = c("Manhattan", "City-Block", "L1", "taxi"),
@@ -89,7 +89,7 @@ pr_supremum_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_maximum_dist",
                 names = c("supremum", "max", "maximum", "Tschebyscheff", "Chebyshev"),
@@ -106,11 +106,11 @@ pr_DB$set_entry(FUN = "R_maximum_dist",
 
 pr_Minkowski <- function(x, y, p = 2) (sum(abs(x - y) ^ p)) ^ (1/p)
 pr_Minkowski_prefun <- function(x, y, pairwise, p, reg_entry) {
-    if (length(p) < 1)
+    if (length(p$p) < 1)
         stop("Argument 'p' mandatory!")
-    p <- p[[1]]
-    if (p < 1)
-        stop("p must not be smaller than 1.")
+    p <- p$p[[1L]]
+    if (p <= 0)
+        stop("'p' must not be smaller than 0.")
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
@@ -144,7 +144,7 @@ pr_Canberra_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = if (!is.list(x)) 0 + x else x,
          y = if (!is.null(y)) if (!is.list(y)) 0 + y else y,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_canberra_dist",
                 names = "Canberra",
@@ -347,7 +347,7 @@ pr_fJaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = 0 + x,
          y = if (!is.null(y)) 0 + y else NULL,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_fuzzy_dist",
                 names = c("fJaccard", "fuzzy_Jaccard"),

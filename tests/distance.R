@@ -18,57 +18,49 @@ y[2,] <- x[1,] <- 0
 x
 y
 
-## dist extensions
+## user interfaces
 
-for (i in 1:9) {
-    cat("\nTesting #",i,"\n\n",sep="")
-    print(.Call("R_dists", x, NULL, FALSE, i, NULL))
-    print(.Call("R_dists", x, x, FALSE, i, NULL))
-    print(.Call("R_dists", x, y, FALSE, i, NULL))
-    print(.Call("R_dists", x, y, TRUE, i, NULL))
-}
-
-## again but via user interfaces
-
-r <- .Call("R_minkowski_dist", x, NULL, FALSE, NULL)
+r <- .Call("R_minkowski_dist", x, NULL, FALSE, 1, PACKAGE = "proxy")
 all.equal(c(r), c(stats::dist(x, method = "minkowski", p = 1)))
 r
-.Call("R_minkowski_dist", x, x, FALSE, NULL)
-.Call("R_minkowski_dist", x, y, FALSE, NULL)
-.Call("R_minkowski_dist", x, y, TRUE, NULL)
+.Call("R_minkowski_dist", x, x, FALSE, 1, PACKAGE = "proxy")
+.Call("R_minkowski_dist", x, y, FALSE, 1, PACKAGE = "proxy")
+.Call("R_minkowski_dist", x, y, TRUE,  1, PACKAGE = "proxy")
 
 dfun <- paste("R",c("euclidean", "maximum", "manhattan", "canberra", "binary", "matching", "fuzzy", "mutual"),"dist", sep = "_")
 
 for (f in dfun) {
     cat("\nTesting ",f,"\n\n",sep="")
-    r <- do.call(".Call", list(f, x, NULL, FALSE))
+    r <- try(do.call(".Call", list(f, x, NULL, FALSE, PACKAGE = "proxy")))
+    if ( inherits(r, "try-error"))
+	next
     s <- try(stats::dist(x, method = gsub("R_|_dist", "", f)))
     if (!inherits(s, "try-error"))
         print(all.equal(c(r), c(s)))
     print(r)
-    print(do.call(".Call", list(f, x, x, FALSE)))
-    print(do.call(".Call", list(f, x, y, FALSE)))
-    print(do.call(".Call", list(f, x, y, TRUE)))
+    print(do.call(".Call", list(f, x, x, FALSE, PACKAGE = "proxy")))
+    print(do.call(".Call", list(f, x, y, FALSE, PACKAGE = "proxy")))
+    print(do.call(".Call", list(f, x, y, TRUE,  PACKAGE = "proxy")))
 }
 
 ## optimized
 
-.Call("R_ejaccard", x, NULL, FALSE)
-.Call("R_ejaccard", x, x, FALSE)
-.Call("R_ejaccard", x, y, FALSE)
-.Call("R_ejaccard", x, y, TRUE)
+.Call("R_ejaccard", x, NULL, FALSE, PACKAGE = "proxy")
+.Call("R_ejaccard", x, x, FALSE, PACKAGE = "proxy")
+.Call("R_ejaccard", x, y, FALSE, PACKAGE = "proxy")
+.Call("R_ejaccard", x, y, TRUE, PACKAGE = "proxy")
 
-.Call("R_cosine", x, NULL, FALSE)
-.Call("R_cosine", x, x, FALSE)
-.Call("R_cosine", x, y, FALSE)
-.Call("R_cosine", x, y, TRUE)
+.Call("R_cosine", x, NULL, FALSE, PACKAGE = "proxy")
+.Call("R_cosine", x, x, FALSE, PACKAGE = "proxy")
+.Call("R_cosine", x, y, FALSE, PACKAGE = "proxy")
+.Call("R_cosine", x, y, TRUE, PACKAGE = "proxy")
 
 x <- matrix(x > 0.5, 5,4)
 y <- matrix(y > 0.5, 5,4)
 
-.Call("R_bjaccard", x, NULL, FALSE)
-.Call("R_bjaccard", x, x, FALSE)
-.Call("R_bjaccard", x, y, FALSE)
-.Call("R_bjaccard", x, y, TRUE)
+.Call("R_bjaccard", x, NULL, FALSE, PACKAGE = "proxy")
+.Call("R_bjaccard", x, x, FALSE, PACKAGE = "proxy")
+.Call("R_bjaccard", x, y, FALSE, PACKAGE = "proxy")
+.Call("R_bjaccard", x, y, TRUE, PACKAGE = "proxy")
 
 ###

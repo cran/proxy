@@ -28,9 +28,8 @@ for (i in proxies)
     {cat(i); prtest(i); cat(": OK.\n")}
 
 ## Minkowski
-writeLines("Minkowski:")
-for (j in c(0, 0.5, 1, 2, 3, Inf))
-    {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
+for (j in c(0.5, 1, 2, 3, Inf))
+    {cat("Minkowski: p =", j); prtest("Minkowski", p = j); cat(": OK.\n")}
 
 ## Mahalanobis (need non-singular matrix)
 x = as.matrix(iris[1:50,-5])
@@ -51,8 +50,9 @@ tmp = dist(x, x, "Stiles")
 ## conversions
 for (i in proxies)
     {cat(i); prtest(i); cat(": OK.\n")}
-for (j in c(0, 0.5, 1, 2, 3, Inf))
-    {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
+## Minkowski
+for (j in c(0.5, 1, 2, 3, Inf))
+    {cat("Minkowski: p =", j); prtest("Minkowski", p = j); cat(": OK.\n")}
 
 ## Levenshtein distance
 s <- c("A", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog")

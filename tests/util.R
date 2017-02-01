@@ -9,26 +9,26 @@ x <- as.dist(matrix(runif(25),5,5))
 x
 attributes(x)
 
-z <- .Call("R_subset_dist", x, 3)
+z <- .Call(proxy:::R_subset_dist, x, 3)
 z
 
 unclass(z)
 
-.Call("R_subset_dist", x, c(1,3,5))
+.Call(proxy:::R_subset_dist, x, c(1,3,5))
 
 attr(x, "Labels") <- LETTERS[1:5]
 
-z <- .Call("R_subset_dist", x, c("A","C","E"))
+z <- .Call(proxy:::R_subset_dist, x, c("A","C","E"))
 z
 attributes(z)
 
 attr(x, "Labels") <- NULL
 
-.Call("R_rowSums_dist", x, FALSE)
-.Call("R_rowSums_dist", z, FALSE)
+.Call(proxy:::R_rowSums_dist, x, FALSE)
+.Call(proxy:::R_rowSums_dist, z, FALSE)
 
-.Call("R_row_dist", x, FALSE)       # row()
-.Call("R_row_dist", x, TRUE)        # col()
+.Call(proxy:::R_row_dist, x, FALSE)       # row()
+.Call(proxy:::R_row_dist, x, TRUE)        # col()
 
 ## test R interfaces
 

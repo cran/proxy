@@ -57,7 +57,7 @@ $Upper
 [1] FALSE
 
 > 
-> z <- .Call("R_subset_dist", x, 3)
+> z <- .Call(proxy:::R_subset_dist, x, 3)
 > z
 dist(0)
 > 
@@ -72,14 +72,14 @@ attr(,"Diag")
 attr(,"Upper")
 [1] FALSE
 > 
-> .Call("R_subset_dist", x, c(1,3,5))
+> .Call(proxy:::R_subset_dist, x, c(1,3,5))
           1         2
 2 0.0377036          
 3 0.1211588 0.8005272
 > 
 > attr(x, "Labels") <- LETTERS[1:5]
 > 
-> z <- .Call("R_subset_dist", x, c("A","C","E"))
+> z <- .Call(proxy:::R_subset_dist, x, c("A","C","E"))
 > z
           A         C
 C 0.0377036          
@@ -106,15 +106,15 @@ $Labels
 > 
 > attr(x, "Labels") <- NULL
 > 
-> .Call("R_rowSums_dist", x, FALSE)
+> .Call(proxy:::R_rowSums_dist, x, FALSE)
 [1] 1.760099 2.555225 1.574656 2.467547 1.680247
-> .Call("R_rowSums_dist", z, FALSE)
+> .Call(proxy:::R_rowSums_dist, z, FALSE)
         A         C         E 
 0.1588624 0.8382308 0.9216860 
 > 
-> .Call("R_row_dist", x, FALSE)       # row()
+> .Call(proxy:::R_row_dist, x, FALSE)       # row()
  [1] 2 3 4 5 3 4 5 4 5 5
-> .Call("R_row_dist", x, TRUE)        # col()
+> .Call(proxy:::R_row_dist, x, TRUE)        # col()
  [1] 1 1 1 1 2 2 2 3 3 4
 > 
 > ## test R interfaces

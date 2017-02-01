@@ -12,7 +12,7 @@ pr_Jaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
             storage.mode(y) <- "logical"
     }
 
-    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
+    list(x = x, y = y, pairwise = pairwise, p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_bjaccard",
                 names = c("Jaccard","binary","Reyssac","Roux"),
@@ -291,14 +291,14 @@ pr_DB$set_entry(FUN = "pr_BraunBlanquet",
                 description = "The Braun-Blanquet Similarity (used in Biology).")
 
 
-pr_cos <- function(x, y) crossprod(x, y) / sqrt(crossprod(x) * crossprod(y))
+pr_cos <- function(x, y) abs(crossprod(x, y) / sqrt(crossprod(x) * crossprod(y)))
 pr_cos_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
         reg_entry$loop <- TRUE
         reg_entry$FUN <- "pr_cos"
     }
-    list(x = x, y = y, pairwise = pairwise, p = p, reg_entry = reg_entry)
+    list(x = x, y = y, pairwise = pairwise, p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_cosine",
                 names = c("cosine", "angular"),
@@ -326,7 +326,7 @@ pr_eJaccard_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = 0 + x,
          y = if (!is.null(y)) 0 + y else NULL,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_ejaccard",
                 names = c("eJaccard", "extended_Jaccard"),
@@ -356,7 +356,7 @@ pr_eDice_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = 0 + x,
          y = if (!is.null(y)) 0 + y else NULL,
          pairwise = pairwise,
-         p = p, reg_entry = reg_entry)
+         p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_edice",
                 names = c("eDice", "extended_Dice","eSorensen"),
@@ -548,7 +548,7 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
         r <- if(is.null(p$ranges.x))
             RANGE(x[m])
         else
-            rep(p$ranges.x, length.out = length(m))
+            rep_len(p$ranges.x, length.out = length(m))
         x[m] <- x[m] / rep(r, each = nrow(x))
         if (!is.null(y)) {
             if (!is.null(p$ranges) && is.null(p$ranges.y))
@@ -556,13 +556,13 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
             r <- if(is.null(p$ranges.y))
                 RANGE(y[m])
             else
-                rep(p$ranges.y, length.out = length(m))
+                rep_len(p$ranges.y, length.out = length(m))
             y[m] <- y[m] / rep(r, each = nrow(y))
         }
     }
 
     ## weights
-    weights <- rep(if (is.null(p$weights)) 1 else p$weights,
+    weights <- rep_len(if (is.null(p$weights)) 1 else p$weights,
                    length.out = ncol(x))
 
     p <- list(l = l, f = f, m = m, weights = weights)

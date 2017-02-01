@@ -344,64 +344,43 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
     return r;
 }
 
-// R wrapper for testing
-
-SEXP R_dists(SEXP x, SEXP y, SEXP d, SEXP f, SEXP p) {
-    static DFUN dfun[] = {
-	minkowski,      //  1 
-	euclidean,      //  2
-	maximum,	//  3
-	manhattan,	//  4
-	canberra,	//  5
-	binary,		//  6
-	matching,	//  7
-	fuzzy,		//  8 similarity
-	mutual		//  9 similarity
-    };
-    int c;
-
-    c = INTEGER(f)[0];
-    if (c < 1 || c > sizeof(dfun) / sizeof(*dfun))
-	error("'f' invalid index");
-     
-    return dists(x, y, d, dfun[c-1], p);
-}
-
 // R wrappers
 
 SEXP R_minkowski_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+    if (isNull(p))
+	error("'p' invalid");
     return dists(x, y, d, minkowski, p);
 }
 
-SEXP R_euclidean_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_euclidean_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, euclidean, R_NilValue);
 }
 
-SEXP R_maximum_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_maximum_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, maximum, R_NilValue);
 }
 
-SEXP R_manhattan_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_manhattan_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, manhattan, R_NilValue);
 }
 
-SEXP R_canberra_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_canberra_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, canberra, R_NilValue);
 }
 
-SEXP R_binary_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_binary_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, binary, R_NilValue);
 }
 
-SEXP R_matching_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_matching_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, matching, R_NilValue);
 }
 
-SEXP R_fuzzy_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_fuzzy_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, fuzzy, R_NilValue);
 }
 
-SEXP R_mutual_dist(SEXP x, SEXP y, SEXP d, SEXP p) {
+SEXP R_mutual_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, mutual, R_NilValue);
 }
 

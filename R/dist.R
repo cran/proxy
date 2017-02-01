@@ -94,15 +94,10 @@ function(x, y = NULL, method = NULL, ...,
                 if (!is.null(y))
                     y <- t(y)
             }
-            if (reg_entry$C_FUN)
-                do.call(".Call", c(list(method), list(x), list(y), pairwise, params,
-                                   list(PACKAGE = reg_entry$PACKAGE)))
-            else {   ## user functions need not implement pairwise
-                if (!is.null(reg_entry$PACKAGE))
-                    do.call(method, c(list(x), list(y), params), envir = asNamespace(reg_entry$PACKAGE))
-                else
-                    do.call(method, c(list(x), list(y), params))
-            }
+            if (reg_entry$C_FUN) {
+		do.call(".Call", c(list(method), list(x), list(y), pairwise, params, list(PACKAGE = reg_entry$PACKAGE)))
+	    } else    ## user functions need not implement pairwise
+                do.call(method, c(list(x), list(y), params), envir = asNamespace(reg_entry$PACKAGE))
         } else if (is.null(y)) {
 ### LOOP WORKHORSE for auto-proximities
             ## transpose data for column-wise loop
@@ -369,7 +364,7 @@ function(x, ...)
 
 pr_simil2dist <-
 function(x)
-    1 - x
+    1 - abs(x)
 
 pr_dist2simil <-
 function(x)

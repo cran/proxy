@@ -11,7 +11,7 @@
 
 dim.dist <-
 function(x)
-    rep(attr(x, "Size"), 2)         # works with nrow and ncol
+    rep.int(attr(x, "Size"), 2)         # works with nrow and ncol
 
 dimnames.dist <-
 names.dist <-

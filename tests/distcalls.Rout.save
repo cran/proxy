@@ -100,16 +100,13 @@ Whittaker: OK.
 Hellinger: OK.
 > 
 > ## Minkowski
-> writeLines("Minkowski:")
-Minkowski:
-> for (j in c(0, 0.5, 1, 2, 3, Inf))
-+     {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
-p = 0: OK.
-p = 0.5: OK.
-p = 1: OK.
-p = 2: OK.
-p = 3: OK.
-p = Inf: OK.
+> for (j in c(0.5, 1, 2, 3, Inf))
++     {cat("Minkowski: p =", j); prtest("Minkowski", p = j); cat(": OK.\n")}
+Minkowski: p = 0.5: OK.
+Minkowski: p = 1: OK.
+Minkowski: p = 2: OK.
+Minkowski: p = 3: OK.
+Minkowski: p = Inf: OK.
 > 
 > ## Mahalanobis (need non-singular matrix)
 > x = as.matrix(iris[1:50,-5])
@@ -178,14 +175,14 @@ Chord: OK.
 Geodesic: OK.
 Whittaker: OK.
 Hellinger: OK.
-> for (j in c(0, 0.5, 1, 2, 3, Inf))
-+     {cat("p =", j); prtest(i = "Minkowski", p = j); cat(": OK.\n")}
-p = 0: OK.
-p = 0.5: OK.
-p = 1: OK.
-p = 2: OK.
-p = 3: OK.
-p = Inf: OK.
+> ## Minkowski
+> for (j in c(0.5, 1, 2, 3, Inf))
++     {cat("Minkowski: p =", j); prtest("Minkowski", p = j); cat(": OK.\n")}
+Minkowski: p = 0.5: OK.
+Minkowski: p = 1: OK.
+Minkowski: p = 2: OK.
+Minkowski: p = 3: OK.
+Minkowski: p = Inf: OK.
 > 
 > ## Levenshtein distance
 > s <- c("A", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog")

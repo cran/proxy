@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-17}{
+  \itemize{
+    \item \code{pr_simil2dist} now computes \eqn{1 - abs(x)} instead of \eqn{1 - x}.
+  }
+}
 \section{Changes in version 0.4-15}{
   \itemize{
     \item add imports from recommended packages.
@@ -58,7 +63,7 @@
 }
 \section{Changes in version 0.4-3}{
   \itemize{
-    \item \code{pr_simil2dist} now computes \eqn{1 / (1 + x)} instead of \eqn{1 / (1 - x)}
+    \item \code{pr_dist2simil} now computes \eqn{1 / (1 + x)} instead of \eqn{1 / (1 - x)}
     \item fix labeling bug for list data with named components
     \item the C-level dist functions now conform with those in package \pkg{stats}
       with respect to NA handling (pairwise-complete observations).
