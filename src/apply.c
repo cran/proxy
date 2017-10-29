@@ -66,7 +66,8 @@ SEXP R_apply_dist_matrix(SEXP p) {
 	SEXP d;
 	
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
-	setAttrib(r, install("Size"), ScalarInteger(nx));
+	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
+	UNPROTECT(1);
 	
 	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
@@ -93,7 +94,7 @@ SEXP R_apply_dist_matrix(SEXP p) {
     PROTECT(tx = allocVector(REALSXP, n)); 
     PROTECT(ty = allocVector(REALSXP, n));
 
-    PROTECT(c = LCONS(f, LCONS(tx, LCONS(ty, p))));
+    PROTECT(c = LCONS(f, CONS(tx, CONS(ty, p))));
     
     l = 0;
     for (j = 0; j < ny; j++) {
@@ -174,7 +175,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
 	
-	setAttrib(r, install("Size"), ScalarInteger(nx));
+	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
+	UNPROTECT(1);
 	
 	if (!isNull(d = getAttrib(x, R_NamesSymbol)))
 	    setAttrib(r, install("Labels"), d);
@@ -202,8 +204,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	PROTECT(r = allocVector(REALSXP, nx));
     }
     
-    PROTECT(c = LCONS(f, (tx = LCONS(R_NilValue, 
-                         (ty = LCONS(R_NilValue, p))))));
+    PROTECT(c = LCONS(f, (tx = CONS(R_NilValue, 
+                         (ty = CONS(R_NilValue, p))))));
    
     l = 0;
     for (j = 0; j < ny; j++) {
@@ -284,7 +286,8 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 	
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
 	
-	setAttrib(r, install("Size"), ScalarInteger(nx));
+	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
+	UNPROTECT(1);
 	
 	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
@@ -318,7 +321,7 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
     PROTECT(td = allocVector(INTSXP, 1)); 
     PROTECT(tn = allocVector(INTSXP, 1)); 
 
-    PROTECT(c = LCONS(f, LCONS(ta, LCONS(tb, LCONS(tc, LCONS(td, LCONS(tn, p))))
+    PROTECT(c = LCONS(f, CONS(ta, CONS(tb, CONS(tc, CONS(td, CONS(tn, p))))
 )));
     
     l = 0;
@@ -437,10 +440,12 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 		error("data parameters do not conform");
 	    // sucks: the c code in identical.c is not
 	    //        accessible.
-	    c = LCONS(install("identical"), LCONS(ATTRIB(VECTOR_ELT(x, k)), 
-					    LCONS(ATTRIB(VECTOR_ELT(y, k)), 
-					    R_NilValue)));
-	    if (LOGICAL(eval(c, R_GlobalEnv))[0] == FALSE)
+	    c =	eval(PROTECT(LCONS(install("identical"), 
+		     PROTECT( CONS(ATTRIB(VECTOR_ELT(x, k)), 
+			      CONS(ATTRIB(VECTOR_ELT(y, k)), 
+				   R_NilValue))))), R_GlobalEnv);
+	    UNPROTECT(2);
+	    if (LOGICAL(c)[0] == FALSE)
 		error("attributes of data parameters do not conform");
 	}
 	if (LOGICAL(d)[0] == TRUE) {
@@ -456,8 +461,9 @@ SEXP R_apply_dist_data_frame(SEXP p) {
     if (m == 0) {
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
 
-	setAttrib(r, install("Size"), ScalarInteger(nx));
-	setAttrib(r, install("Labels"), coerceVector(getAttrib(x, install("row.names")), STRSXP));
+	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
+	setAttrib(r, install("Labels"), PROTECT(coerceVector(getAttrib(x, install("row.names")), STRSXP)));
+	UNPROTECT(2);
 
 	setAttrib(r, R_ClassSymbol, mkString("dist"));
     } else 
@@ -474,12 +480,14 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 
     PROTECT(tx = allocVector(VECSXP, nc));
     setAttrib(tx, R_NamesSymbol, getAttrib(x, R_NamesSymbol));
-    setAttrib(tx, install("row.names"), (rx = allocVector(INTSXP, 1)));
+    setAttrib(tx, install("row.names"), PROTECT(rx = allocVector(INTSXP, 1)));
+    UNPROTECT(1);
     setAttrib(tx, R_ClassSymbol, getAttrib(x, R_ClassSymbol));
 
     PROTECT(ty = allocVector(VECSXP, nc));
     setAttrib(ty, R_NamesSymbol, getAttrib(x, R_NamesSymbol));
-    setAttrib(ty, install("row.names"), (ry = allocVector(INTSXP, 1)));
+    setAttrib(ty, install("row.names"), PROTECT(ry = allocVector(INTSXP, 1)));
+    UNPROTECT(1);
     setAttrib(ty, R_ClassSymbol, getAttrib(x, R_ClassSymbol));
 
     for (k = 0; k < nc; k++) {
@@ -497,7 +505,7 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 	SET_OBJECT(s, OBJECT(t));
     }
 
-    PROTECT(c = LCONS(f, LCONS(tx, LCONS(ty, p))));
+    PROTECT(c = LCONS(f, CONS(tx, CONS(ty, p))));
 
     l = 0;
     for (j = 0; j < ny; j++) {

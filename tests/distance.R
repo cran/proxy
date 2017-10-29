@@ -43,7 +43,7 @@ for (f in dfun) {
     print(do.call(".Call", list(f, x, y, TRUE,  PACKAGE = "proxy")))
 }
 
-## optimized
+## no longer optimized
 
 .Call("R_ejaccard", x, NULL, FALSE, PACKAGE = "proxy")
 .Call("R_ejaccard", x, x, FALSE, PACKAGE = "proxy")

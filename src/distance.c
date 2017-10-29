@@ -301,7 +301,8 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
 	SEXP d;
 	
 	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
-	setAttrib(r, install("Size"), ScalarInteger(nx));
+	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
+	UNPROTECT(1);
 	
 	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
@@ -384,590 +385,98 @@ SEXP R_mutual_dist(SEXP x, SEXP y, SEXP d) {
     return dists(x, y, d, mutual, R_NilValue);
 }
 
-// R optimized
-
-// compute jaccard similarities given logical data.
-// for implicit binarization use one minus binary
-// distances. 
-
-SEXP R_bjaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
-    if (!isMatrix(R_x) || TYPEOF(R_x) != LGLSXP)
-	error("'x' invalid object or mode");
-    if (!isNull(R_y) && (!isMatrix(R_y) || TYPEOF(R_y) != LGLSXP))
-	error("'y' invalid object or mode");
-    if (TYPEOF(R_d) != LGLSXP)
-	error("'d' invalid mode");
-    int nc, nx, ny, nz; 
-    int i, j, k, l, t, n, m = 0;		// matrix flag
-    int *x, *y, *s;
-    double z;
-    SEXP r;
-    
-    if (isNull(R_y))
-	R_y = R_x;
-    else
-    if (LOGICAL(R_d)[0] == TRUE)
-	m = 2;
-    else
-	m = 1;
-    
-    nc = INTEGER(GET_DIM(R_x))[1];
-    
-    if (INTEGER(GET_DIM(R_y))[1] != nc)
-	error("tha number of columns of 'x' and 'y' do not conform");
-
-    nz =
-    nx = INTEGER(GET_DIM(R_x))[0];
-    ny = INTEGER(GET_DIM(R_y))[0];
-
-    if (m == 0) {
-	SEXP d;
-	
-	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
-	setAttrib(r, install("Size"), ScalarInteger(nx));
-	
-	if (!isNull(d = getAttrib(R_x, R_DimNamesSymbol)))
-	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
-	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else
-    if (m == 1) {
-	SEXP d1, d2;
-	
-	PROTECT(r = allocMatrix(REALSXP, nx, ny));
-
-	d1 = getAttrib(R_x, R_DimNamesSymbol);
-	d2 = getAttrib(R_y, R_DimNamesSymbol);
-	if (!isNull(d1) || !isNull(d2)) {
-	    SEXP d;
-	    
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
-	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
-	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
-	}
-    } else {
-	if (nx != ny)
-	    error("the number of rows of 'x' and 'y' do not conform");
-
-	PROTECT(r = allocVector(REALSXP, nx));
+// 2017/10
+SEXP R_bjaccard(SEXP x, SEXP y, SEXP d) {
+    SEXP r = dists(x, y, d, binary, R_NilValue);
+    for (int k = 0; k < LENGTH(r); k++) {
+	double z = REAL(r)[k];
+	if (!ISNAN(z))
+	    REAL(r)[k] = 1 - z;
     }
-
-    x = INTEGER(R_x);
-    y = INTEGER(R_y);
-    
-    s = INTEGER(PROTECT(allocVector(INTSXP, nx)));
-    memset(s, 0, sizeof(int)*nx);
-    
-    for (i = 0; i < nx; i++) {
-	t = 0;
-	for (k = 0; k < nc; k++) {
-	    if (x[i+k*nx] == NA_LOGICAL)
-		continue;
-	    t += x[i+k*nx] == TRUE;
-	}
-	s[i] = t;	
-    }
-
-    n = 0;
-    for (j = 0; j < ny; j++) {
-	if (m == 0) {
-	    t = s[j];
-	    i = j + 1;
-	}
-	else {
-	    t = 0;
-	    for (k = 0; k < nc; k++) {
-		if (y[j+k*ny] == NA_LOGICAL)
-		    continue;
-		t += y[j+k*ny] == TRUE;
-	    }
-	    if (m == 1) 
-		i  = 0;
-	    else {
-		i  = j;
-		nz = j + 1;
-	    }
-	}
-	for (; i < nz; i++) {
-	    l = 0;
-	    for (k = 0; k < nc; k++) {
-		if (x[i+k*nx] == NA_LOGICAL || 
-		    y[j+k*ny] == NA_LOGICAL)
-		    continue;
-		l += (x[i+k*nx] == TRUE) & 
-		     (y[j+k*ny] == TRUE);
-	    }
-	    z = (double) l / (t + s[i] - l);
-	    if (ISNAN(z))			    /* division by zero */
-		REAL(r)[n++] = 1;		    /* but be compatible */
-	    else
-		REAL(r)[n++] = z;
-	}
-	R_CheckUserInterrupt();
-    }
-   
-    UNPROTECT(2);
-
     return r;
 }
 
-/* calculate Jaccard similarities extended to real-
- * valued data, i.e the scalar product divided by the
- * squared Euclidean distance plus the scalar product.
- */
+static double ebinary(double *x, double *y, int nx, int ny, int nc)
+{
+    double dev, prod, dist, xy;
+    int count;
+    int j;
 
-SEXP R_ejaccard(SEXP R_x, SEXP R_y, SEXP R_d) {
-    if (!isMatrix(R_x))
-	error("'x' not of class matrix");
-    if (!isNull(R_y) && !isMatrix(R_x))
-	error("'y' not of class matrix");
-    if (TYPEOF(R_d) != LGLSXP)
-	error("'d' not of type logical");
-    int nc, nx, ny, nz; 
-    int i, j, k, l, n, m = 0;
-    double t, z;
-    double *x, *y, *s;
-    SEXP r_x = R_x, r_y = R_y, r;
-    
-    if (isNull(R_y))
-	R_y = R_x;
-    else
-    if (LOGICAL(R_d)[0] == TRUE)
-	m = 2;
-    else
-	m = 1;
-		    
-    nc = INTEGER(GET_DIM(R_x))[1];
-
-    if (INTEGER(GET_DIM(R_y))[1] != nc)
-	error("the number of columns of 'x' and 'y' do not conform");
-
-    nz =
-    nx = INTEGER(GET_DIM(R_x))[0];
-    ny = INTEGER(GET_DIM(R_y))[0];
-
-    if (m == 2 && nx != ny)
-	error("the number f rows of 'x' and 'y' do not conform");
-
-    if (TYPEOF(R_x) != REALSXP) {
-	PROTECT(R_x = coerceVector(r_x, REALSXP));
-
-	if (isNull(r_y) || r_x == r_y)
-	    R_y = R_x;
+    dist = xy = 0;
+    count = 0;
+    for (j = 0; j < nc; j++) {
+        if (both_non_NA(*x, *y)) {
+	    dev = (*x - *y);
+	    prod = *x * *y;
+	    if (!ISNAN(dev) && !ISNAN(prod)) {
+		dist += dev * dev;
+		xy += prod;
+		count++;
+	    }
+        }
+	x += nx;
+	y += ny;
     }
-
-    if (TYPEOF(R_y) != REALSXP) 
-	PROTECT(R_y = coerceVector(r_y, REALSXP));
-
-    if (m == 0) {
-	SEXP d;
-	
-	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
-	setAttrib(r, install("Size"), ScalarInteger(nx));
-	
-	if (!isNull(d = getAttrib(R_x, R_DimNamesSymbol)))
-	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
-	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else
-    if (m == 1) {
-	SEXP d1, d2;
-	
-	PROTECT(r = allocMatrix(REALSXP, nx, ny));
-
-	d1 = getAttrib(R_x, R_DimNamesSymbol);
-	d2 = getAttrib(R_y, R_DimNamesSymbol);
-	if (!isNull(d1) || !isNull(d2)) {
-	    SEXP d;
-	    
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
-	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
-	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
-	}
-    } else 
-	PROTECT(r = allocVector(REALSXP, nx));
-
-    x = REAL(R_x);
-    y = REAL(R_y);
-	
-    s = REAL(PROTECT(allocVector(REALSXP, nx)));
-    memset(s, 0, sizeof(double)*nx);
-    
-    for (i = 0; i < nx; i++) {
-	z = 0;
-	l = 0;
-	for (k = 0; k < nc; k++) {
-	    if (!R_FINITE(x[i+k*nx]))
-		continue;
-	    l++;
-	    z+= pow(x[i+k*nx], 2);
-	}
-	s[i] = (l > 0) ? z : NA_REAL;
-    }
-
-    n = 0; 
-    for (j = 0; j < ny; j++) {
-	if (m == 0) {
-	    t = s[j];
-	    i = j + 1;
-	}
-	else {
-	    z = 0;
-	    l = 0;
-	    for (k = 0; k < nc; k++) {
-		if (!R_FINITE(y[j+k*ny]))
-		    continue;
-		l++;
-		z+= pow(y[j+k*ny], 2);
-	    }
-	    t = (l > 0) ? z : NA_REAL;
-	    if (m == 1)
-		i = 0;
-	    else {
-		i  = j;
-		nz = j + 1;
-	    }
-	}
-	for (; i < nz; i++) {
-	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
-		REAL(r)[n++] = NA_REAL;
-		continue;
-	    }
-	    l = 0;
-	    z = 0;
-	    for (k = 0; k < nc; k++) {
-	        if (!R_FINITE(x[i+k*nx]) || !R_FINITE(y[j+k*ny]))
-		    continue;
-		l++;
-		z+= x[i+k*nx] * y[j+k*ny];
-	    }
-	    if (l > 0) {
-	        z = z / (t + s[i] - z);
-	        if (ISNAN(z))
-		    REAL(r)[n++] = 1;	    /* be compatible */
-		else
-		    REAL(r)[n++] = z;
-	    }
-	    else
-		REAL(r)[n++] = NA_REAL;
-	}
-	R_CheckUserInterrupt();
-    }
-
-    UNPROTECT(2);
-    if (R_x != r_x)
-	UNPROTECT(1);
-    if (!isNull(r_y) && r_y != r_x && R_y != r_y)
-	UNPROTECT(1);
-
-    return r;
+    if (count == 0) return NA_REAL;
+    if (!R_FINITE(xy)) return NA_REAL;
+    dist = dist / dfp + xy;
+    xy /= dist;
+    if (ISNAN(xy))
+	if (dist < DBL_MIN)
+	    return 1;
+	else
+	    return NA_REAL;
+    return xy;
 }
 
-/* calculate Dice similarities extended to real-
- * valued data, i.e. twice the scalar product divided by the
- * squared Euclidean distance plus twice the scalar product.
- */
-
-SEXP R_edice(SEXP R_x, SEXP R_y, SEXP R_d) {
-    if (!isMatrix(R_x))
-	error("'x' not of class matrix");
-    if (!isNull(R_y) && !isMatrix(R_x))
-	error("'y' not of class matrix");
-    if (TYPEOF(R_d) != LGLSXP)
-	error("'d' not of type logical");
-    int nc, nx, ny, nz; 
-    int i, j, k, l, n, m = 0;
-    double t, z;
-    double *x, *y, *s;
-    SEXP r_x = R_x, r_y = R_y, r;
-    
-    if (isNull(R_y))
-	R_y = R_x;
-    else
-    if (LOGICAL(R_d)[0] == TRUE)
-	m = 2;
-    else
-	m = 1;
-		    
-    nc = INTEGER(GET_DIM(R_x))[1];
-
-    if (INTEGER(GET_DIM(R_y))[1] != nc)
-	error("the number of columns of 'x' and 'y' do not conform");
-
-    nz =
-    nx = INTEGER(GET_DIM(R_x))[0];
-    ny = INTEGER(GET_DIM(R_y))[0];
-
-    if (m == 2 && nx != ny)
-	error("the number f rows of 'x' and 'y' do not conform");
-
-    if (TYPEOF(R_x) != REALSXP) {
-	PROTECT(R_x = coerceVector(r_x, REALSXP));
-
-	if (isNull(r_y) || r_x == r_y)
-	    R_y = R_x;
-    }
-
-    if (TYPEOF(R_y) != REALSXP) 
-	PROTECT(R_y = coerceVector(r_y, REALSXP));
-
-    if (m == 0) {
-	SEXP d;
-	
-	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
-	setAttrib(r, install("Size"), ScalarInteger(nx));
-	
-	if (!isNull(d = getAttrib(R_x, R_DimNamesSymbol)))
-	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
-	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else
-    if (m == 1) {
-	SEXP d1, d2;
-	
-	PROTECT(r = allocMatrix(REALSXP, nx, ny));
-
-	d1 = getAttrib(R_x, R_DimNamesSymbol);
-	d2 = getAttrib(R_y, R_DimNamesSymbol);
-	if (!isNull(d1) || !isNull(d2)) {
-	    SEXP d;
-	    
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
-	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
-	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
-	}
-    } else 
-	PROTECT(r = allocVector(REALSXP, nx));
-
-    x = REAL(R_x);
-    y = REAL(R_y);
-	
-    s = REAL(PROTECT(allocVector(REALSXP, nx)));
-    memset(s, 0, sizeof(double)*nx);
-    
-    for (i = 0; i < nx; i++) {
-	z = 0;
-	l = 0;
-	for (k = 0; k < nc; k++) {
-	    if (!R_FINITE(x[i+k*nx]))
-		continue;
-	    l++;
-	    z+= pow(x[i+k*nx], 2);
-	}
-	s[i] = (l > 0) ? z : NA_REAL;
-    }
-
-    n = 0; 
-    for (j = 0; j < ny; j++) {
-	if (m == 0) {
-	    t = s[j];
-	    i = j + 1;
-	}
-	else {
-	    z = 0;
-	    l = 0;
-	    for (k = 0; k < nc; k++) {
-		if (!R_FINITE(y[j+k*ny]))
-		    continue;
-		l++;
-		z+= pow(y[j+k*ny], 2);
-	    }
-	    t = (l > 0) ? z : NA_REAL;
-	    if (m == 1)
-		i = 0;
-	    else {
-		i  = j;
-		nz = j + 1;
-	    }
-	}
-	for (; i < nz; i++) {
-	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
-		REAL(r)[n++] = NA_REAL;
-		continue;
-	    }
-	    l = 0;
-	    z = 0;
-	    for (k = 0; k < nc; k++) {
-	        if (!R_FINITE(x[i+k*nx]) || !R_FINITE(y[j+k*ny]))
-		    continue;
-		l++;
-		z+= x[i+k*nx] * y[j+k*ny];
-	    }
-	    if (l > 0) {
-	        z = 2 * z / (t + s[i]);
-	        if (ISNAN(z))
-		    REAL(r)[n++] = 1;	    /* be compatible */
-		else
-		    REAL(r)[n++] = z;
-	    }
-	    else
-		REAL(r)[n++] = NA_REAL;
-	}
-	R_CheckUserInterrupt();
-    }
-
-    UNPROTECT(2);
-    if (R_x != r_x)
-	UNPROTECT(1);
-    if (!isNull(r_y) && r_y != r_x && R_y != r_y)
-	UNPROTECT(1);
-
-    return r;
+SEXP R_ejaccard(SEXP x, SEXP y, SEXP d) {
+    dfp = 1;
+    return dists(x, y, d, ebinary, R_NilValue);
 }
 
-/* calculate cosine similarities.
- */
-
-SEXP R_cosine(SEXP R_x, SEXP R_y, SEXP R_d) {
-    if (!isMatrix(R_x))
-	error("'x' not of class matrix");
-    if (!isNull(R_y) && !isMatrix(R_y))
-	error("'y' not of class matrix");
-    if (TYPEOF(R_d) != LGLSXP)
-	error("'d' not of type logical");
-    int nc, nx, ny, nz; 
-    int i, j, k, l, n, m = 0;
-    double t, z;
-    double *x, *y, *s;
-    SEXP r_x = R_x, r_y = R_y, r;
-	        
-    if (isNull(R_y))
-	R_y = R_x;
-    else
-    if (LOGICAL(R_d)[0] == TRUE)
-	m = 2;
-    else
-	m = 1;
-		    
-    nc = INTEGER(GET_DIM(R_x))[1];
-
-    if (INTEGER(GET_DIM(R_y))[1] != nc)
-       error("the number of columns of 'x' and 'y' do not conform");
-
-    nz =
-    nx = INTEGER(GET_DIM(R_x))[0];
-    ny = INTEGER(GET_DIM(R_y))[0];
-
-    if (m == 2 && nx != ny)
-	error("the number of rows of 'x' and 'y' do not conform");
-
-    if (TYPEOF(R_x) != REALSXP) {
-	PROTECT(R_x = coerceVector(r_x, REALSXP));
-
-	if (isNull(r_y) || r_x == r_y)
-	    R_y = R_x;
-    }
-
-    if (TYPEOF(R_y) != REALSXP) 
-	PROTECT(R_y = coerceVector(r_y, REALSXP));
-
-    if (m == 0) {
-	SEXP d;
-	
-	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
-	setAttrib(r, install("Size"), ScalarInteger(nx));
-	
-	if (!isNull(d = getAttrib(R_x, R_DimNamesSymbol)))
-	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
-	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
-    } else
-    if (m == 1) {
-	SEXP d1, d2;
-	
-	PROTECT(r = allocMatrix(REALSXP, nx, ny));
-
-	d1 = getAttrib(R_x, R_DimNamesSymbol);
-	d2 = getAttrib(R_y, R_DimNamesSymbol);
-	if (!isNull(d1) || !isNull(d2)) {
-	    SEXP d;
-	    
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
-	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
-	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
-	}
-	setAttrib(r, R_ClassSymbol, mkString("crossdist"));
-    } else 
-	PROTECT(r = allocVector(REALSXP, nx));
-
-    x = REAL(R_x);
-    y = REAL(R_y);
-	
-    s = REAL(PROTECT(allocVector(REALSXP, nx)));
-    memset(s, 0, sizeof(double)*nx);
-    
-    for (i = 0; i < nx; i++) {
-	z = 0;
-	l = 0;
-	for (k = 0; k < nc; k++) {
-	    if (!R_FINITE(x[i+k*nx]))
-		continue;
-	    l++;
-	    z+= pow(x[i+k*nx], 2);
-	}
-	s[i] = (l > 0) ? sqrt(z) : NA_REAL;
-    }
-
-    n = 0; 
-    for (j = 0; j < ny; j++) {
-	if (m == 0) {
-	    t = s[j];
-	    i = j + 1;
-	}
-	else {
-	    z = 0;
-	    l = 0;
-	    for (k = 0; k < nc; k++) {
-		if (!R_FINITE(y[j+k*ny]))
-		    continue;
-		l++;
-		z+= pow(y[j+k*ny], 2);
-	    }
-	    t = (l > 0) ? sqrt(z) : NA_REAL;
-	    if (m == 1)
-		i = 0;
-	    else {
-		i  = j;
-		nz = j + 1;
-	    }
-	}
-	for (; i < nz; i++) {
-	    if (!R_FINITE(t) || !R_FINITE(s[i])) {
-		REAL(r)[n++] = NA_REAL;
-		continue;
-	    }
-	    l = 0;
-	    z = 0;
-	    for (k = 0; k < nc; k++) {
-	        if (!R_FINITE(x[i+k*nx]) || !R_FINITE(y[j+k*ny]))
-		    continue;
-		l++;
-		z+= x[i+k*nx] * y[j+k*ny];
-	    }
-	    if (l > 0) {
-	        z =  z / t / s[i];
-	        if (ISNAN(z)) {
-		    if (t < DBL_MIN && s[i] < DBL_MIN)
-			REAL(r)[n++] = 1;	    /* be compatible */
-		    else
-			REAL(r)[n++] = 0;
-		}
-		else
-		    REAL(r)[n++] = z;
-	    }
-	    else
-		REAL(r)[n++] = NA_REAL;
-	}
-	R_CheckUserInterrupt();
-    }
-
-    UNPROTECT(2);
-    if (R_x != r_x)
-	UNPROTECT(1);
-    if (!isNull(r_y) && r_x != r_y && R_y != r_y)
-	UNPROTECT(1);
-
-    return r;
+SEXP R_edice(SEXP x, SEXP y, SEXP d) {
+    dfp = 2;
+    return dists(x, y, d, ebinary, R_NilValue);
 }
+
+static double cosine(double *x, double *y, int nx, int ny, int nc)
+{
+    double prod, xy, xx, yy;
+    int count;
+    int j;
+
+    xy = xx = yy = 0;
+    count = 0;
+    for (j = 0; j < nc; j++) {
+        if (both_non_NA(*x, *y)) {
+	    prod = *x * *y;
+	    if (!ISNAN(prod)) {
+		xy += prod;
+		xx += *x * *x;
+		yy += *y * *y;
+		count++;
+	    }
+        }
+	x += nx;
+	y += ny;
+    }
+    if (count == 0) return NA_REAL;
+    if (!R_FINITE(xy)) return NA_REAL;
+    xy /= sqrt(xx) * sqrt(yy);
+    if (ISNAN(xy))
+	if (xx < DBL_MIN && yy < DBL_MIN)
+	    return 1;
+	else
+	    if (xx < DBL_MIN || yy < DBL_MIN)
+		return 0;
+	    else
+		return NA_REAL;
+    return xy;
+}
+
+SEXP R_cosine(SEXP x, SEXP y, SEXP d) {
+    return dists(x, y, d, cosine, R_NilValue);
+}
+
 
 //

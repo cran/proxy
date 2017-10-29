@@ -75,11 +75,13 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
     if (x == R_x)
 	copyMostAttrib(R_x, r);
 
-    setAttrib(r, install("Size"), ScalarInteger(ns));
+    setAttrib(r, install("Size"), PROTECT(ScalarInteger(ns)));
+    UNPROTECT(1);
     if (!isNull(d)) {
 	SEXP t;
 	
-	setAttrib(r, install("Labels"), (t = allocVector(STRSXP, ns)));
+	setAttrib(r, install("Labels"), PROTECT(t = allocVector(STRSXP, ns)));
+	UNPROTECT(1);
 	for (k = 0; k < ns; k++)
 	    SET_STRING_ELT(t, k, STRING_ELT(d, INTEGER(s)[k]));
     }

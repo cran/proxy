@@ -1,5 +1,12 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-19}{
+  \itemize{
+    \item fix for binary distance (C-code): now has same behavior than 
+          the corresponding distance method in the \pkg{stats} package
+          in case of missing values.
+  }
+}
 \section{Changes in version 0.4-17}{
   \itemize{
     \item \code{pr_simil2dist} now computes \eqn{1 - abs(x)} instead of \eqn{1 - x}.
