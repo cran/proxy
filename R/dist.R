@@ -235,14 +235,6 @@ function(x, y = NULL, method = NULL, ...,
     ret
 }
 
-as.matrix.simil <-
-function (x, ...)
-{
-    ret <- NextMethod(x, ...)
-    diag(ret) <- 1
-    ret
-}
-
 # note that a simil object must always also be a dist
 # object for method dispatch
 
@@ -359,6 +351,37 @@ print.pairdist <-
 function(x, ...)
 {
     print(as.vector(x), ...)
+    invisible(x)
+}
+
+print.simil <-
+function (x, diag = NULL, upper = NULL, digits = getOption("digits"),
+    justify = "none", right = TRUE, ...)
+{
+    if (length(x)) {
+        if (is.null(diag))
+            diag <- if (is.null(a <- attr(x, "Diag")))
+                FALSE
+            else a
+        if (is.null(upper))
+            upper <- if (is.null(a <- attr(x, "Upper")))
+                FALSE
+            else a
+        m <- as.matrix(x)
+        if (diag) diag(m) <- NA
+        cf <- format(m, digits = digits, justify = justify)
+        if (!upper)
+            cf[row(cf) < col(cf)] <- ""
+        if (!diag)
+            cf[row(cf) == col(cf)] <- ""
+        print(if (diag || upper)
+            cf
+        else cf[-1, -attr(x, "Size"), drop = FALSE], quote = FALSE,
+            right = right, ...)
+    }
+    else {
+        cat(data.class(x), "(0)\n", sep = "")
+    }
     invisible(x)
 }
 

@@ -50,10 +50,13 @@ as.simil(x, FUN = NULL)
     \code{"Euclidean"}, and for \code{simil} \code{"correlation"}.}
   \item{diag}{logical value indicating whether the diagonal of the
     distance/similarity matrix should be printed by
-    \code{\link{print.dist}}/\code{\link{print.simil}}.
+    \code{\link{print.dist}}/\code{\link{print.simil}}. Note that the
+    diagonal values are never stored in \code{dist} objects. 
 
     In the context of \code{as.matrix} the value to use on the diagonal
-    representing self-proximities.}
+    representing self-proximities. In case of similarities, this
+    defaults to \code{NA} since a priori there are no upper bounds, so
+    the maximum similarity needs to be specified by the user.}
   \item{upper}{logical value indicating whether the upper triangle of the
     distance/similarity matrix should be printed by
     \code{\link{print.dist}}/\code{\link{print.simil}}}

@@ -1,5 +1,11 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-20}{
+  \itemize{
+    \item print method for \code{simil} objects added that prints
+    \code{NA} instead of 0 for diagonal elements, if requested.
+  }
+}
 \section{Changes in version 0.4-19}{
   \itemize{
     \item fix for binary distance (C-code): now has same behavior than 
