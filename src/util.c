@@ -26,7 +26,8 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
     if (TYPEOF(x) != REALSXP) 
 	PROTECT(x = coerceVector(R_x, REALSXP));
 
-    PROTECT(r = allocArray(INTSXP, ScalarInteger(0)));
+    PROTECT(r = allocArray(INTSXP, PROTECT(ScalarInteger(0))));
+    UNPROTECT(1);
     INTEGER(getAttrib(r, R_DimSymbol))[0] = nx;
 
     d = getAttrib(x, install("Labels"));
@@ -37,7 +38,8 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	    error("'Labels' not of type character");
 	if (LENGTH(d) != nx)
 	    error("'Labels' invalid length");
-	setAttrib(r, R_DimNamesSymbol, (t = allocVector(VECSXP, 1)));
+	setAttrib(r, R_DimNamesSymbol, PROTECT(t = allocVector(VECSXP, 1)));
+	UNPROTECT(1);
 	SET_VECTOR_ELT(t, 0, d);
     }
 

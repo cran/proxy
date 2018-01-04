@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-21}{
+  \itemize{
+    \item  some more C-code \code{PROTECT}ing.
+  }
+}
 \section{Changes in version 0.4-20}{
   \itemize{
     \item print method for \code{simil} objects added that prints
@@ -8,7 +13,7 @@
 }
 \section{Changes in version 0.4-19}{
   \itemize{
-    \item fix for binary distance (C-code): now has same behavior than 
+    \item fix for binary distance (C-code): now has same behavior as
           the corresponding distance method in the \pkg{stats} package
           in case of missing values.
   }

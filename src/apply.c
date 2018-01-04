@@ -72,7 +72,8 @@ SEXP R_apply_dist_matrix(SEXP p) {
 	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
 	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
+	setAttrib(r, R_ClassSymbol, PROTECT(mkString("dist")));
+	UNPROTECT(1);
     } else
     if (m == 1) {
 	SEXP d1, d2;
@@ -84,7 +85,8 @@ SEXP R_apply_dist_matrix(SEXP p) {
 	if (!isNull(d1) || !isNull(d2)) {
 	    SEXP d;
 
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
+	    setAttrib(r, R_DimNamesSymbol, PROTECT(d = allocVector(VECSXP, 2)));
+	    UNPROTECT(1);
 	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
 	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
 	}
@@ -116,8 +118,10 @@ SEXP R_apply_dist_matrix(SEXP p) {
             if (LENGTH(s) != 1)
                 error("not a scalar return value");
 	    // fixme: warning?
-	    if (TYPEOF(s) != REALSXP)
-                REAL(r)[l++] = REAL(coerceVector(s, REALSXP))[0];
+	    if (TYPEOF(s) != REALSXP) {
+                REAL(r)[l++] = REAL(coerceVector(PROTECT(s), REALSXP))[0];
+		UNPROTECT(1);
+	    }
 	    else
 		REAL(r)[l++] = REAL(s)[0];
         }                       
@@ -181,7 +185,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	if (!isNull(d = getAttrib(x, R_NamesSymbol)))
 	    setAttrib(r, install("Labels"), d);
 	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
+	setAttrib(r, R_ClassSymbol, PROTECT(mkString("dist")));
+	UNPROTECT(1);
     } else 
     if (m == 1) {
 	SEXP d1, d2;
@@ -193,7 +198,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	if (!isNull(d1) || !isNull(d2)) {
 	    SEXP d;
 
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
+	    setAttrib(r, R_DimNamesSymbol, PROTECT(d = allocVector(VECSXP, 2)));
+	    UNPROTECT(1);
 	    SET_VECTOR_ELT(d, 0, d1);
 	    SET_VECTOR_ELT(d, 1, d2);
 	}
@@ -225,8 +231,10 @@ SEXP R_apply_dist_list(SEXP p) {
             if (LENGTH(s) != 1)
                 error("not a scalar return value");
 	    // fixme: warning?
-	    if (TYPEOF(s) != REALSXP)
-                REAL(r)[l++] = REAL(coerceVector(s, REALSXP))[0];
+	    if (TYPEOF(s) != REALSXP) {
+                REAL(r)[l++] = REAL(coerceVector(PROTECT(s), REALSXP))[0];
+		UNPROTECT(1);
+	    }
 	    else
 		REAL(r)[l++] = REAL(s)[0];
         }                       
@@ -292,7 +300,8 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
 	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
+	setAttrib(r, R_ClassSymbol, PROTECT(mkString("dist")));
+	UNPROTECT(1);
     } else
     if (m == 1) {
 	SEXP d1, d2;
@@ -304,7 +313,8 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 	if (!isNull(d1) || !isNull(d2)) {
 	    SEXP d;
 
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
+	    setAttrib(r, R_DimNamesSymbol, PROTECT(d = allocVector(VECSXP, 2)));
+	    UNPROTECT(1);
 	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
 	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
 	}
@@ -358,8 +368,10 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
             if (LENGTH(s) != 1)
                 error("not a scalar return value");
             // fixme: warning?
-            if (TYPEOF(s) != REALSXP)
-                REAL(r)[l++] = REAL(coerceVector(s, REALSXP))[0];
+            if (TYPEOF(s) != REALSXP) {
+                REAL(r)[l++] = REAL(coerceVector(PROTECT(s), REALSXP))[0];
+		UNPROTECT(1);
+	    }
             else
                 REAL(r)[l++] = REAL(s)[0];
         }                       
@@ -462,19 +474,24 @@ SEXP R_apply_dist_data_frame(SEXP p) {
         PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
 
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
-	setAttrib(r, install("Labels"), PROTECT(coerceVector(getAttrib(x, install("row.names")), STRSXP)));
+	UNPROTECT(1);
+	setAttrib(r, install("Labels"), PROTECT(coerceVector(PROTECT(getAttrib(x, install("row.names"))), STRSXP)));
 	UNPROTECT(2);
 
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
+	setAttrib(r, R_ClassSymbol, PROTECT(mkString("dist")));
+	UNPROTECT(1);
     } else 
     if (m == 1) {
 	SEXP d;
 
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
 
-	setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
-	SET_VECTOR_ELT(d, 0, coerceVector(getAttrib(x, install("row.names")), STRSXP));
-	SET_VECTOR_ELT(d, 1, coerceVector(getAttrib(y, install("row.names")), STRSXP));
+	setAttrib(r, R_DimNamesSymbol, PROTECT(d = allocVector(VECSXP, 2)));
+	UNPROTECT(1);
+	SET_VECTOR_ELT(d, 0, coerceVector(PROTECT(getAttrib(x, install("row.names"))), STRSXP));
+	UNPROTECT(1);
+	SET_VECTOR_ELT(d, 1, coerceVector(PROTECT(getAttrib(y, install("row.names"))), STRSXP));
+	UNPROTECT(1);
     } else
 	PROTECT(r = allocVector(REALSXP, nx));
 
@@ -529,8 +546,10 @@ SEXP R_apply_dist_data_frame(SEXP p) {
             if (LENGTH(s) != 1)
                 error("not a scalar return value");
 	    // fixme: warning?
-	    if (TYPEOF(s) != REALSXP)
-                REAL(r)[l++] = REAL(coerceVector(s, REALSXP))[0];
+	    if (TYPEOF(s) != REALSXP) {
+                REAL(r)[l++] = REAL(coerceVector(PROTECT(s), REALSXP))[0];
+		UNPROTECT(1);
+	    }
 	    else
 		REAL(r)[l++] = REAL(s)[0];
         }                       

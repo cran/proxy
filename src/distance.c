@@ -307,7 +307,8 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
 	if (!isNull(d = getAttrib(x, R_DimNamesSymbol)))
 	    setAttrib(r, install("Labels"), VECTOR_ELT(d, 0));
 	// fixme: package?
-	setAttrib(r, R_ClassSymbol, mkString("dist"));
+	setAttrib(r, R_ClassSymbol, PROTECT(mkString("dist")));
+	UNPROTECT(1);
     } else
     if (m == 1) {
 	SEXP d1, d2;
@@ -319,7 +320,8 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
 	if (!isNull(d1) || !isNull(d2)) {
 	    SEXP d;
 	    
-	    setAttrib(r, R_DimNamesSymbol, (d = allocVector(VECSXP, 2)));
+	    setAttrib(r, R_DimNamesSymbol, PROTECT(d = allocVector(VECSXP, 2)));
+	    UNPROTECT(1);
 	    SET_VECTOR_ELT(d, 0, isNull(d1) ? d1 : VECTOR_ELT(d1, 0));
 	    SET_VECTOR_ELT(d, 1, isNull(d2) ? d2 : VECTOR_ELT(d2, 0));
 	}
@@ -427,6 +429,11 @@ static double ebinary(double *x, double *y, int nx, int ny, int nc)
 	else
 	    return NA_REAL;
     return xy;
+}
+
+SEXP R_ess2(SEXP x, SEXP y, SEXP d) {
+    dfp = .5;
+    return dists(x, y, d, ebinary, R_NilValue);
 }
 
 SEXP R_ejaccard(SEXP x, SEXP y, SEXP d) {
