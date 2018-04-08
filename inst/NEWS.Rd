@@ -1,5 +1,11 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-22}{
+  \itemize{
+    \item Change registry class name to \code{proxy_registry} to
+         prevent name clashes with registry package.
+  }
+}
 \section{Changes in version 0.4-21}{
   \itemize{
     \item  some more C-code \code{PROTECT}ing.

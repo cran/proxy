@@ -403,18 +403,18 @@ function(index_field = "names", entry_class = NULL,
                    get_sealed_entry_names = .FUNCall(.get_sealed_entry_names),
                    get_sealed_field_names = .FUNCall(.get_sealed_field_names)
                    ),
-              class = c(registry_class, "registry"))
+              class = c(registry_class, "proxy_registry"))
 }
 
-"[[.registry" <-
+"[[.proxy_registry" <-
 function(x, i)
   x$get_entry(i)
 
-length.registry <-
+length.proxy_registry <-
 function(x)
     x$n_of_entries()
 
-print.registry <-
+print.proxy_registry <-
 function(x, ...)
 {
     l <- x$n_of_entries()
@@ -438,11 +438,11 @@ function(x, ...)
     writeLines(formatUL(x, label = names(x)))
 }
 
-summary.registry <-
+summary.proxy_registry <-
 function(object, ...)
     as.data.frame(object, ...)
 
-as.data.frame.registry <-
+as.data.frame.proxy_registry <-
 function(x, ...)
     do.call(rbind,
             lapply(x$get_entries(),
