@@ -182,8 +182,10 @@ SEXP R_apply_dist_list(SEXP p) {
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
 	UNPROTECT(1);
 	
-	if (!isNull(d = getAttrib(x, R_NamesSymbol)))
+	PROTECT(d = getAttrib(x, R_NamesSymbol));
+	if (!isNull(d))
 	    setAttrib(r, install("Labels"), d);
+	UNPROTECT(1);
 	// fixme: package?
 	setAttrib(r, R_ClassSymbol, PROTECT(mkString("dist")));
 	UNPROTECT(1);
@@ -193,8 +195,8 @@ SEXP R_apply_dist_list(SEXP p) {
 	
         PROTECT(r = allocMatrix(REALSXP, nx, ny));
 	
-	d1 = getAttrib(x, R_NamesSymbol);
-	d2 = getAttrib(y, R_NamesSymbol);
+	PROTECT(d1 = getAttrib(x, R_NamesSymbol));
+	PROTECT(d2 = getAttrib(y, R_NamesSymbol));
 	if (!isNull(d1) || !isNull(d2)) {
 	    SEXP d;
 
@@ -203,15 +205,17 @@ SEXP R_apply_dist_list(SEXP p) {
 	    SET_VECTOR_ELT(d, 0, d1);
 	    SET_VECTOR_ELT(d, 1, d2);
 	}
+	UNPROTECT(2);
     } else {
 	if (nx != ny)
 	    error("the number of components of 'x' and 'y' does not conform");
 
 	PROTECT(r = allocVector(REALSXP, nx));
     }
-    
-    PROTECT(c = LCONS(f, (tx = CONS(R_NilValue, 
-                         (ty = CONS(R_NilValue, p))))));
+
+    PROTECT(ty = CONS(R_NilValue, p));
+    PROTECT(tx = CONS(R_NilValue, ty));
+    PROTECT(c = LCONS(f, tx));
    
     l = 0;
     for (j = 0; j < ny; j++) {
@@ -241,7 +245,7 @@ SEXP R_apply_dist_list(SEXP p) {
         R_CheckUserInterrupt();
     }
 
-    UNPROTECT(2);
+    UNPROTECT(4);
 
     return r;
 }

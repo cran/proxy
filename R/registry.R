@@ -76,7 +76,7 @@ function(index_field = "names", entry_class = NULL,
     function(field_name, field, value)
     {
         ## Note we do not check NA entries because this may by set automatically
-        if (!is.function(value) && !is.na(value[1])) {
+        if (!is.function(value) && !any(is.na(value))) {
             ## check class / list of alternatives, if any
             if (!any(is.na(field$type))) {
                 ## check list of alternatives
@@ -144,11 +144,11 @@ function(index_field = "names", entry_class = NULL,
             stop(paste("Field", dQuote(name), "already in registry."))
 
         ## possibly, infer type from argment
-        if (!is.na(type) && !(is.character(type)))
+        if (!any(is.na(type)) && !(is.character(type)))
             type <- class(type)
 
         ## check mandatory fields
-        if (is_mandatory && !is.na(default))
+        if (is_mandatory && !any(is.na(default)))
             stop("Mandatory fields should have no default.")
 
         ## create field entry
