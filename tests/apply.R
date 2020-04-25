@@ -79,10 +79,12 @@ f <- function(x, y) {
     sum(x == y) / length(x)
 }
 
-x <- data.frame(1:5, LETTERS[1:5])
+x <- data.frame(1:5, LETTERS[1:5], stringsAsFactors = FALSE)
 x
 
-y <- data.frame(1:6, LETTERS[c(1,1:5)], row.names = letters[1:6])
+y <- data.frame(1:6, LETTERS[c(1,1:5)],
+                row.names = letters[1:6],
+                stringsAsFactors = FALSE)
 y
 
 all.equal(x, y)
