@@ -472,7 +472,7 @@ pr_DB$set_entry(FUN = "pr_Pearson",
                 C_FUN = FALSE,
                 abcd = FALSE,
                 formula = "sqrt{Chi / (n + Chi)}",
-                reference = "Anderberg, M.R. (1973). Cluster Analysis for Applicaitons. Academic Press.",
+                reference = "Anderberg, M.R. (1973). Cluster Analysis for Applications. Academic Press.",
                 description = "Contingency Coefficient. Chi is the Chi-Squared statistic.")
 
 
