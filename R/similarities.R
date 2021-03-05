@@ -534,10 +534,15 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
     }
 
     ## scale metric types
-    RANGE <- function(x) {
+    RANGE <- function(x, y = NULL) {
         ## compute scale
-        ret <- sapply(x,
-                      function(i) max(i, na.rm = TRUE) - min(i, na.rm = TRUE))
+        MAX <- sapply(x, max, na.rm = TRUE)
+        MIN <- sapply(x, min, na.rm = TRUE)
+        if (!is.null(y)) {
+            MAX <- pmax(MAX, sapply(y, max, na.rm = TRUE))
+            MIN <- pmin(MIN, sapply(y, min, na.rm = TRUE))
+        }
+        ret <- MAX - MIN
         ## do not scale when range == 0
         ret[ret == 0] <- 1
         ret
@@ -546,18 +551,34 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
         if (!is.null(p$ranges) && is.null(p$ranges.x))
             p$ranges.x <- p$ranges
         r <- if(is.null(p$ranges.x))
-            RANGE(x[m])
+            RANGE(x[m], y[m])
         else
-            rep_len(p$ranges.x, length.out = length(m))
-        x[m] <- x[m] / rep(r, each = nrow(x))
+            rep_len(p$ranges.x, length.out = sum(m))
+        
+        if (!is.null(p$min) && is.null(p$min.x))
+            p$min.x <- p$min
+        MIN <- if (is.null(p$min.x)) {
+            if (is.null(y))
+                sapply(x[m], min, na.rm = TRUE)
+            else
+                pmin(sapply(x[m], min, na.rm = TRUE),
+                     sapply(y[m], min, na.rm = TRUE))
+        } else 
+            rep_len(p$min.x, length.out = sum(m))
+        
+        x[m] <- sweep(sweep(x[m], 2, MIN), 2, r, FUN = "/")
         if (!is.null(y)) {
+            if (!is.null(p$min) && is.null(p$min.y))
+                p$min.y <- p$min
+            if (!is.null(p$min.y))
+                MIN <- rep_len(p$min.y, length.out = sum(m))
+            
             if (!is.null(p$ranges) && is.null(p$ranges.y))
                 p$ranges.y <- p$ranges
-            r <- if(is.null(p$ranges.y))
-                RANGE(y[m])
-            else
-                rep_len(p$ranges.y, length.out = length(m))
-            y[m] <- y[m] / rep(r, each = nrow(y))
+            if (!is.null(p$ranges.y))
+                r <- rep_len(p$ranges.y, length.out = sum(m))
+            
+            y[m] <- sweep(sweep(y[m], 2, MIN), 2, r, FUN = "/")
         }
     }
 
@@ -592,8 +613,9 @@ internal integer codes are taken as the ranks, and not what rank() would
 return. This is for compatibility with daisy() of the cluster package, and
 will make a slight difference in case of ties. The weights w_k
 can be specified by passing a numeric vector (recycled as needed) to
-the 'weights' argument. Ranges for scaling the columns of x and y
-can be specified using the 'ranges.x'/'ranges.y'
-arguments (or simply 'ranges' for both x and y).")
+the 'weights' argument. Ranges (minimum) for scaling the columns of x and y
+can be specified using the 'ranges.x'/'ranges.y' ('min.x' / 'min.y')
+arguments (or simply 'ranges' ('min') for both x and y). In case of cross-proximities, 
+if not specified via these arguments, both data frames are standardized together.")
 
 
