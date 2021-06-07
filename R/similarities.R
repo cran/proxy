@@ -304,7 +304,7 @@ pr_DB$set_entry(FUN = "R_cosine",
                 names = c("cosine", "angular"),
                 PREFUN = "pr_cos_prefun",
                 distance = FALSE,
-                convert = "pr_simil2dist",
+                convert = function (x) 1 - x,
                 type = "metric",
                 loop = FALSE,
                 C_FUN = TRUE,
@@ -554,7 +554,7 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
             RANGE(x[m], y[m])
         else
             rep_len(p$ranges.x, length.out = sum(m))
-        
+
         if (!is.null(p$min) && is.null(p$min.x))
             p$min.x <- p$min
         MIN <- if (is.null(p$min.x)) {
@@ -563,21 +563,21 @@ pr_Gower_prefun <- function(x, y, pairwise, p, reg_entry) {
             else
                 pmin(sapply(x[m], min, na.rm = TRUE),
                      sapply(y[m], min, na.rm = TRUE))
-        } else 
+        } else
             rep_len(p$min.x, length.out = sum(m))
-        
+
         x[m] <- sweep(sweep(x[m], 2, MIN), 2, r, FUN = "/")
         if (!is.null(y)) {
             if (!is.null(p$min) && is.null(p$min.y))
                 p$min.y <- p$min
             if (!is.null(p$min.y))
                 MIN <- rep_len(p$min.y, length.out = sum(m))
-            
+
             if (!is.null(p$ranges) && is.null(p$ranges.y))
                 p$ranges.y <- p$ranges
             if (!is.null(p$ranges.y))
                 r <- rep_len(p$ranges.y, length.out = sum(m))
-            
+
             y[m] <- sweep(sweep(y[m], 2, MIN), 2, r, FUN = "/")
         }
     }
@@ -615,7 +615,7 @@ will make a slight difference in case of ties. The weights w_k
 can be specified by passing a numeric vector (recycled as needed) to
 the 'weights' argument. Ranges (minimum) for scaling the columns of x and y
 can be specified using the 'ranges.x'/'ranges.y' ('min.x' / 'min.y')
-arguments (or simply 'ranges' ('min') for both x and y). In case of cross-proximities, 
+arguments (or simply 'ranges' ('min') for both x and y). In case of cross-proximities,
 if not specified via these arguments, both data frames are standardized together.")
 
 
