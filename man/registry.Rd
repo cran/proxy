@@ -129,7 +129,7 @@ changed and/or complemented by the corresponding (optional)
 \code{x} and \code{y} are two vectors from the
 data matrix (matrices) supplied. If \code{abcd} is \code{FALSE}, it is
 assumed that binary measures will be used, and the number of all
-\code{n} concordant and discordant pairs (x\_k, y\_k)
+\code{n} concordant and discordant pairs (x_k, y_k)
 precomputed and supplied instead of \code{x} and
 \code{y}. \code{a}, \code{b}, \code{c}, and \code{d} are the counts of
 all (TRUE, TRUE), (TRUE, FALSE), (FALSE, TRUE), and (FALSE, FALSE)

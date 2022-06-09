@@ -224,7 +224,7 @@ function(x, y = NULL, method = NULL, ...,
                        is.character(convert_distances))
                 do.call(convert_distances, list(ret))
             else if (is.null(reg_entry$convert))
-                pr_simil2dist(ret)
+                pr_dist2simil(ret)
             else
                 do.call(reg_entry$convert, list(ret))
         }

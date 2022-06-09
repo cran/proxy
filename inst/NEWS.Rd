@@ -1,7 +1,14 @@
 \name{NEWS}
 \title{News for Package \pkg{proxy}}
+\section{Changes in version 0.4-27}{
+    \itemize{
+        \item cosmetic changes in help pages
+        \item add angular distance/similarity; keep old behavior as cosine
+    }
+}
+
 \section{Changes in version 0.4-26}{
-  \itemize{
+	  \itemize{
     \item Change coercion function for cosine similarity to distance to
     1-x instead of 1-abs(x)
    }

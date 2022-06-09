@@ -291,7 +291,7 @@ pr_DB$set_entry(FUN = "pr_BraunBlanquet",
                 description = "The Braun-Blanquet Similarity (used in Biology).")
 
 
-pr_cos <- function(x, y) abs(crossprod(x, y) / sqrt(crossprod(x) * crossprod(y)))
+pr_cos <- function(x, y) crossprod(x, y) / sqrt(crossprod(x) * crossprod(y))
 pr_cos_prefun <- function(x, y, pairwise, p, reg_entry) {
     if (!is.matrix(x)) {
         reg_entry$C_FUN <- FALSE
@@ -301,7 +301,7 @@ pr_cos_prefun <- function(x, y, pairwise, p, reg_entry) {
     list(x = x, y = y, pairwise = pairwise, p = NULL, reg_entry = reg_entry)
 }
 pr_DB$set_entry(FUN = "R_cosine",
-                names = c("cosine", "angular"),
+                names = "cosine",
                 PREFUN = "pr_cos_prefun",
                 distance = FALSE,
                 convert = function (x) 1 - x,
@@ -312,6 +312,20 @@ pr_DB$set_entry(FUN = "R_cosine",
                 formula = "xy / sqrt(xx * yy)",
                 reference = "Anderberg, M.R. (1973). Cluster Analysis for Applicaitons. Academic Press.",
                 description = "The cos Similarity (C implementation)")
+
+pr_angular <- function(x, y) 1 - acos(crossprod(x, y) / sqrt(crossprod(x) * crossprod(y))) / pi
+pr_DB$set_entry(FUN = pr_angular,
+                names = "angular",
+                distance = FALSE,
+                convert = function (x) 1 - x,
+                type = "metric",
+                loop = TRUE,
+                C_FUN = FALSE,
+                abcd = FALSE,
+                formula = "1 - acos(xy / sqrt(xx * yy)) / pi",
+                reference = "Anderberg, M.R. (1973). Cluster Analysis for Applicaitons. Academic Press.",
+                description = "The angular similarity")
+
 
 pr_eJaccard <- function(x, y) {
     tmp <- crossprod(x, y)
