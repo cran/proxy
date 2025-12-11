@@ -16,9 +16,10 @@
  */
 
 SEXP R_apply_dist_matrix(SEXP p) {
-    int i, j, k, l, n, nx, ny, nz, m = 0;
+    int i, j, k, n, nx, ny, nz, m = 0;
     SEXP r, c, tx, ty;
     SEXP R_x, x, R_y, y, R_d, f;
+    R_xlen_t l;
 
     p = CDR(p);
     if (length(p) < 4)
@@ -64,8 +65,9 @@ SEXP R_apply_dist_matrix(SEXP p) {
 
     if (m == 0) {
 	SEXP d;
-	
-        PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
+
+	l = nx;	
+        PROTECT(r = allocVector(REALSXP, l*(l-1)/2));
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
 	UNPROTECT(1);
 	
@@ -144,9 +146,10 @@ SEXP R_apply_dist_matrix(SEXP p) {
  */
 
 SEXP R_apply_dist_list(SEXP p) {
-    int i, j, l, nx, ny, nz, m = 0;
+    int i, j, nx, ny, nz, m = 0;
     SEXP r, c, d, tx, ty;
     SEXP x, y, f;
+    R_xlen_t l;
 
     p = CDR(p);
     if (length(p) < 4)
@@ -176,8 +179,9 @@ SEXP R_apply_dist_list(SEXP p) {
 
     if (m == 0) {
 	SEXP d;
-	
-        PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
+
+	l = nx;	
+        PROTECT(r = allocVector(REALSXP, l*(l-1)/2));
 	
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
 	UNPROTECT(1);
@@ -258,10 +262,11 @@ SEXP R_apply_dist_list(SEXP p) {
  */
 
 SEXP R_apply_dist_binary_matrix(SEXP p) {
-    int i, j, k, l, n, nx, ny, nz, m = 0;   
+    int i, j, k, n, nx, ny, nz, m = 0;   
     int i0, j0;
     SEXP r, c, d, ta, tb, tc, td, tn;
     SEXP x, y, f;
+    R_xlen_t l;
 
     p = CDR(p);
     if (length(p) < 3)
@@ -295,8 +300,9 @@ SEXP R_apply_dist_binary_matrix(SEXP p) {
 
     if (m == 0) {
 	SEXP d;
-	
-        PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
+
+	l = nx;	
+        PROTECT(r = allocVector(REALSXP, l*(l-1)/2));
 	
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
 	UNPROTECT(1);
@@ -418,9 +424,10 @@ static void setElement(SEXP x, int i, SEXP y) {
 }
 
 SEXP R_apply_dist_data_frame(SEXP p) {
-    int i, j, k, l, nc, nx, ny, nz, m = 0;
+    int i, j, k, nc, nx, ny, nz, m = 0;
     SEXP r, c, d, tx, ty, rx, ry;
     SEXP x, y, f;
+    R_xlen_t l;
 
     p = CDR(p);
     if (length(p) < 4)
@@ -475,7 +482,8 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 
     // fixme: row.names
     if (m == 0) {
-        PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
+	l = nx;
+        PROTECT(r = allocVector(REALSXP, l*(l-1)/2));
 
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
 	UNPROTECT(1);
@@ -518,12 +526,10 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 
 					// fixme: should fail for S4
 	SET_VECTOR_ELT(tx, k, (s = allocVector(TYPEOF(t), 1)));
-	SET_ATTRIB(s, ATTRIB(t));	// fixme: may be wrong
-	SET_OBJECT(s, OBJECT(t));
+	DUPLICATE_ATTRIB(s, ATTRIB(t));	// fixme: may be wrong
 
 	SET_VECTOR_ELT(ty, k, (s = allocVector(TYPEOF(t), 1)));
-	SET_ATTRIB(s, ATTRIB(t));
-	SET_OBJECT(s, OBJECT(t));
+	DUPLICATE_ATTRIB(s, ATTRIB(t));
     }
 
     PROTECT(c = LCONS(f, CONS(tx, CONS(ty, p))));

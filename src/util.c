@@ -18,9 +18,11 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	error("'x' not of class dist");
     int i, j, k, si, sj, nx, ns;
     SEXP x = R_x, r, d;
+    R_xlen_t l;
 
-    nx = 1 + (int) sqrt(2*LENGTH(x));
-    if (LENGTH(x) != nx*(nx-1)/2)
+    nx = 1 + (int) sqrt(2*XLENGTH(x));
+    l = nx;
+    if (XLENGTH(x) != l*(l-1)/2)
 	error("'x' invalid length");
     
     if (TYPEOF(x) != REALSXP) 
@@ -57,17 +59,18 @@ SEXP R_subset_dist(SEXP R_x, SEXP s) {
 	else
 	    INTEGER(s)[k]--;
 
-    PROTECT(r = allocVector(REALSXP, ns*(ns-1)/2));
+    l = ns;
+    PROTECT(r = allocVector(REALSXP, l*(l-1)/2));
 
-    k = 0;
+    l = 0;
     for (i = 0; i < ns-1; i++) {
 	si = INTEGER(s)[i];
 	for (j = i+1; j < ns; j++) {
 	    sj = INTEGER(s)[j];
 	    if (si == sj)
-		REAL(r)[k++] = NA_REAL;
+		REAL(r)[l++] = NA_REAL;
 	    else 
-		REAL(r)[k++] = 
+		REAL(r)[l++] = 
 		(si > sj)    ? REAL(x)[si+sj*(nx-1)-sj*(sj+1)/2-1]
 			     : REAL(x)[sj+si*(nx-1)-si*(si+1)/2-1];
 	}
@@ -111,12 +114,13 @@ SEXP R_rowSums_dist(SEXP R_x, SEXP na_rm) {
 	error("'x' not of class dist");
     if (isNull(na_rm) || TYPEOF(na_rm) != LGLSXP)
         error("'na.rm' not of type logical");
-    int i, j, k, n;
+    int i, j, n;
     SEXP x = R_x, r;
+    R_xlen_t k;
 
-    n = 1 + (int) sqrt(2*LENGTH(x));
-    
-    if (LENGTH(x) != n*(n-1)/2)
+    n = 1 + (int) sqrt(2*XLENGTH(x));
+    k = n;
+    if (XLENGTH(x) != k*(k-1)/2)
         error("'x' invalid length");
    
     if (TYPEOF(x) != REALSXP) 
@@ -160,19 +164,21 @@ SEXP R_row_dist(SEXP x, SEXP col) {
 	error("'x' not of class dist");
     if (isNull(col) || TYPEOF(col) != LGLSXP)
 	error("'col' not of type logical");
-    int i, j, n, nx;
+    int i, j, nx;
     SEXP r;
+    R_xlen_t l;
 
-    nx = 1 + (int) sqrt(2*LENGTH(x));
-    if (LENGTH(x) != nx*(nx-1)/2)
+    nx = 1 + (int) sqrt(2*XLENGTH(x));
+    l = nx;
+    if (XLENGTH(x) != l*(l-1)/2)
 	error("'x' invalid length");
 
-    PROTECT(r = allocVector(INTSXP, LENGTH(x)));
+    PROTECT(r = allocVector(INTSXP, XLENGTH(x)));
     
-    n = 0;
+    l = 0;
     for (j = 1; j < nx; j++)
 	for (i = j+1; i < nx+1; i++) 
-	    INTEGER(r)[n++] = (*LOGICAL(col)) ? j : i;
+	    INTEGER(r)[l++] = (*LOGICAL(col)) ? j : i;
 
     UNPROTECT(1);
 

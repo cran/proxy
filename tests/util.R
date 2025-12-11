@@ -35,8 +35,6 @@ attr(x, "Labels") <- NULL
 dim(x)
 dimnames(x) <- letters[1:5]
 dimnames(x)
-names(x)    <- LETTERS[1:5]
-names(x)
 
 row.dist(x)
 col.dist(x)
@@ -44,6 +42,10 @@ col.dist(x)
 subset(x, c(1,3,5))
 x[[c(1,3,5)]]
 x[c(1,3,5)]                         # as usual
+
+x[1:2,2:3]
+x[1,]
+x[,2]
 
 x[[-1]]                             # drop subscripts
 

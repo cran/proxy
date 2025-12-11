@@ -128,7 +128,7 @@ summary(pr_DB)
 pr_DB$get_entry("Jaccard")
 
 ### binary data
-x <- matrix(sample(c(FALSE, TRUE), 8, rep = TRUE), ncol = 2)
+x <- matrix(sample(c(FALSE, TRUE), 8, replace = TRUE), ncol = 2)
 dist(x, method = "Jaccard")
 
 ### for real-valued data

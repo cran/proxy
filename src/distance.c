@@ -262,8 +262,9 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
 	error("'y' not of class matrix");
     if (TYPEOF(R_d) != LGLSXP)
 	error("'d' not of type logical");
-    int i, j, n, nx, ny, nc, m = 0;
+    int i, j, nx, ny, nc, m = 0;
     SEXP x = R_x, y = R_y, r;
+    R_xlen_t l;
 
     if (!isNull(R_p))			    // fixme: check?
 	dfp = *REAL(R_p);
@@ -299,8 +300,9 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
 
     if (m == 0) {
 	SEXP d;
-	
-	PROTECT(r = allocVector(REALSXP, nx*(nx-1)/2));
+
+	l = nx;	
+	PROTECT(r = allocVector(REALSXP, l*(l-1)/2));
 	setAttrib(r, install("Size"), PROTECT(ScalarInteger(nx)));
 	UNPROTECT(1);
 	
@@ -312,7 +314,7 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
     } else
     if (m == 1) {
 	SEXP d1, d2;
-	
+
 	PROTECT(r = allocMatrix(REALSXP, nx, ny));
 
 	d1 = getAttrib(x, R_DimNamesSymbol);
@@ -327,14 +329,14 @@ static SEXP dists(SEXP R_x, SEXP R_y, SEXP R_d, DFUN f, SEXP R_p) {
 	}
     } else
 	PROTECT(r = allocVector(REALSXP, nx));
-   
-    n = 0;
+
+    l = 0;
     for (j = 0; j < ny; j++) {
 	if (m == 2)
-	    REAL(r)[n++] = f(REAL(x)+j, REAL(y)+j, nx, ny, nc);
+	    REAL(r)[l++] = f(REAL(x)+j, REAL(y)+j, nx, ny, nc);
 	else
 	    for (i = (m == 0) ? j+1 : 0; i < nx; i++)
-		REAL(r)[n++] = f(REAL(x)+i, REAL(y)+j, nx, ny, nc);
+		REAL(r)[l++] = f(REAL(x)+i, REAL(y)+j, nx, ny, nc);
 	R_CheckUserInterrupt();
     }
 
@@ -390,7 +392,7 @@ SEXP R_mutual_dist(SEXP x, SEXP y, SEXP d) {
 // 2017/10
 SEXP R_bjaccard(SEXP x, SEXP y, SEXP d) {
     SEXP r = dists(x, y, d, binary, R_NilValue);
-    for (int k = 0; k < LENGTH(r); k++) {
+    for (R_xlen_t k = 0; k < XLENGTH(r); k++) {
 	double z = REAL(r)[k];
 	if (!ISNAN(z))
 	    REAL(r)[k] = 1 - z;

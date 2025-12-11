@@ -35,7 +35,7 @@ function(index_field = "names", entry_class = NULL,
                        is_mandatory = is_mandatory,
                        is_modifiable = is_modifiable,
                        validity_FUN = validity_FUN),
-                  class = "registry_field")
+                  class = "proxy_registry_field")
 
     .make_entry <- function(l)
     {
@@ -43,7 +43,7 @@ function(index_field = "names", entry_class = NULL,
         l <- l[c(index_field, setdiff(.get_field_names(), index_field))]
 
         ## return object (possibly inheriting from entry_class)
-        structure(l, class = c(entry_class, "registry_entry"))
+        structure(l, class = c(entry_class, "proxy_registry_entry"))
     }
 
     .get_mandatory_fields <-
@@ -426,11 +426,11 @@ function(x, ...)
         writeLines(paste("An object of class", dQuote("registry"), "with", l, "entries."))
 }
 
-print.registry_field <-
+print.proxy_registry_field <-
 function(x, ...)
     writeLines(formatUL(x, label = names(x), ...))
 
-print.registry_entry <-
+print.proxy_registry_entry <-
 function(x, ...)
 {
     x <- .functions_to_characters(x)

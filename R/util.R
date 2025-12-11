@@ -16,17 +16,19 @@ function(x)
 dimnames.dist <-
 names.dist <-
 function(x)
-    attr(x, "Labels")
+    rep(list(attr(x, "Labels")), 2)
 
 "dimnames<-.dist" <-
 "names<-.dist" <-
 function(x, value)
 {
+    if (is.list(value))
+        value <- value[[1]]
     if (is.null(value))
         attr(x, "Labels") <- NULL
     else {
         if (length(value) != attr(x, "Size"))
-            stop("dimension of 'x' and length of 'value' do not conform")
+            stop("Length of labels does not conform Size.")
         attr(x, "Labels") <- as.character(value)
     }
     x
@@ -75,3 +77,13 @@ function(x, na.rm = FALSE, diag = TRUE)
 }
 
 ###
+
+"[.dist" <-
+function(x, i, j, drop = FALSE)
+{
+    na = nargs() - !missing(drop)
+    if (na < 3L)
+        as.vector(x)[i]
+    else
+        as.matrix(x)[i, j, drop = drop]
+}
