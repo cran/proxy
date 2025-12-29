@@ -1,4 +1,4 @@
-fdfaba004c9fcebe77341137ebd3831a *DESCRIPTION
+82afb291f7c876b5b11a150c9838192b *DESCRIPTION
 44df953f7285b4fcbe1e7da9688c7c71 *NAMESPACE
 efa5c729c0744f2fdb2a9f970f982ef7 *R/database.R
 1c71957d655b0e93bac59105b9686697 *R/dissimilarities.R
@@ -12,11 +12,11 @@ a362bc4aa816b5af5ff0860d4e733e2f *build/vignette.rds
 ae938729f8d904204ba87464e466b43e *inst/NEWS.Rd
 bcc756854674661ee0886c0c7d3b6c18 *inst/doc/overview.R
 ec24a75149c7ad35c68b86f731dd0d7b *inst/doc/overview.Rnw
-75efb0f1349fb8899381190477a7dc06 *inst/doc/overview.pdf
+892cd90ed67eb0342f2838eb6878affa *inst/doc/overview.pdf
 9c8d0d33289c68d368cbab26f0228f40 *man/dist.Rd
 f17e45dbaa4de733ae46e4b46fd9f503 *man/registry.Rd
 d9e34eea7ac668a0dc3798ec3e476e9f *man/rowSums.dist.Rd
-97cfb2e245d65da1ea3c162522b6cd10 *src/apply.c
+27dd4d661b46747c5717399cf3a4cdd8 *src/apply.c
 b89a43d9d13c8810e0f5967bad52338f *src/arrayIndex.c
 08ebf4f86113fd387539a40bfd0b7441 *src/distance.c
 5f5f6926767c934be5dee4d32e6e1e98 *src/dll.c

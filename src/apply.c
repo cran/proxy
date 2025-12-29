@@ -1,4 +1,4 @@
-#include <R.h>
+
 #include <Rdefines.h>
 
 // wrapper functions for distance computation with
@@ -464,10 +464,10 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 	    // sucks: the c code in identical.c is not
 	    //        accessible.
 	    c =	eval(PROTECT(LCONS(install("identical"), 
-		     PROTECT( CONS(ATTRIB(VECTOR_ELT(x, k)), 
-			      CONS(ATTRIB(VECTOR_ELT(y, k)), 
+		     PROTECT( CONS(PROTECT(eval(PROTECT(LCONS(install("attributes"), PROTECT(CONS(VECTOR_ELT(x, k), R_NilValue)))), R_GlobalEnv)), 
+			      CONS(PROTECT(eval(PROTECT(LCONS(install("attributes"), PROTECT(CONS(VECTOR_ELT(y, k), R_NilValue)))), R_GlobalEnv)),
 				   R_NilValue))))), R_GlobalEnv);
-	    UNPROTECT(2);
+	    UNPROTECT(8);
 	    if (LOGICAL(c)[0] == FALSE)
 		error("attributes of data parameters do not conform");
 	}
@@ -526,10 +526,10 @@ SEXP R_apply_dist_data_frame(SEXP p) {
 
 					// fixme: should fail for S4
 	SET_VECTOR_ELT(tx, k, (s = allocVector(TYPEOF(t), 1)));
-	DUPLICATE_ATTRIB(s, ATTRIB(t));	// fixme: may be wrong
+	SHALLOW_DUPLICATE_ATTRIB(s, t);	// fixme: may be wrong
 
 	SET_VECTOR_ELT(ty, k, (s = allocVector(TYPEOF(t), 1)));
-	DUPLICATE_ATTRIB(s, ATTRIB(t));
+	SHALLOW_DUPLICATE_ATTRIB(s, t);
     }
 
     PROTECT(c = LCONS(f, CONS(tx, CONS(ty, p))));
